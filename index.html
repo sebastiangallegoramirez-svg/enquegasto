@@ -384,6 +384,15 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
 .grupo-q{font-size:13.5px;font-weight:650;color:var(--gris);padding:14px 0 2px;display:flex;justify-content:space-between;gap:8px}
 .grupo-q:first-child{padding-top:8px}
 .hist{font-size:13.5px;margin-top:8px}
+.hist .btn-mini{margin-top:4px}
+.hist div>span:last-child{flex:none;white-space:nowrap}
+.ed-ayuda{margin:12px 2px 0}
+.ed-borrar{display:flex;justify-content:center;margin-top:20px}
+.acciones-mov{display:flex;gap:6px;justify-content:flex-end}
+.abonos{margin-top:10px}
+.abonos summary{font-size:14px}
+.abonos .item{padding:8px 0}
+.abonos .item .e{font-size:16px}
 .hist div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--linea)}
 .hist div:last-child{border-bottom:0}
 .vacio-cta{text-align:left}
@@ -728,6 +737,34 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
     <p class="suave peq" style="margin-top:-4px">El banco no escribe “Rincón Latino” sino el nombre legal o el del dueño. Cuando un correo coincide en valor y fecha con algo que anotaste, aprendo ese nombre y la próxima vez lo anoto solo.</p>
     <div class="lista nombres" id="co-nombres"></div>
     <p class="suave peq" style="margin-top:14px">Todo queda en tu Google Sheet: los nombres en la hoja “Nombres del banco” y las reglas de otros remitentes en “Reglas correo”.</p>
+  </div>
+</div>
+
+<!-- ================= EDITAR GASTO ================= -->
+<div class="ajustes oculto" id="editor" role="dialog" aria-modal="true" aria-labelledby="ed-titulo">
+  <div class="ajustes-in">
+    <div class="ajustes-top"><h2 id="ed-titulo">Editar gasto</h2><button class="btn btn-sec" id="ed-cerrar" type="button">Cerrar</button></div>
+    <form id="f-editar" autocomplete="off" novalidate>
+      <label class="lbl" for="ed-monto">¿Cuánto fue?</label>
+      <div class="monto-wrap"><span class="peso">$</span><input id="ed-monto" class="num" inputmode="numeric" placeholder="0" aria-label="Monto en pesos"></div>
+      <fieldset><legend>¿En qué?</legend><div class="chips-medio" id="ed-cat"></div></fieldset>
+      <label class="lbl" for="ed-lugar">¿Dónde?</label>
+      <input id="ed-lugar" list="dl-lugares" placeholder="Ej.: Corrientazo La 33" autocapitalize="words">
+      <fieldset><legend>¿Cómo pagaste?</legend><div class="chips-medio" id="ed-medio"></div></fieldset>
+      <fieldset><legend>¿Qué te dio este gasto?<span class="legend-opc">opcional</span></legend><div class="chips-medio" id="ed-dio"></div></fieldset>
+      <fieldset><legend>¿Valió la pena?<span class="legend-opc">opcional</span></legend><div class="chips-medio" id="ed-valio"></div></fieldset>
+      <div class="fila-2">
+        <div><label class="lbl" for="ed-fecha">Fecha</label><input type="date" id="ed-fecha"></div>
+        <div><label class="lbl" for="ed-nota">Nota</label><input id="ed-nota" placeholder="Opcional"></div>
+      </div>
+      <label class="switch-row" for="ed-hormiga">
+        <input type="checkbox" id="ed-hormiga"><span class="switch" aria-hidden="true"></span>
+        <span><b>Es un gasto hormiga</b><small>Compras pequeñas que se repiten: café, snack, antojo.</small></span>
+      </label>
+      <button class="btn btn-primario btn-ancho" id="ed-guardar" type="submit">Guardar cambios</button>
+      <p class="peq suave ed-ayuda">Si cambias el valor o cómo pagaste, tu saldo se ajusta solo con la diferencia.</p>
+      <div class="ed-borrar"><button class="btn-mini" type="button" id="ed-borrar">Borrar este gasto</button></div>
+    </form>
   </div>
 </div>
 
@@ -1389,12 +1426,14 @@ function renderInicio() {
       <div class="mini-acciones"><button class="btn-mini" type="button" id="i-corregir">Corregir saldo</button><button class="btn-mini" type="button" id="i-entro">Me entró plata</button>${P.historial && P.historial.length ? '<button class="btn-mini" type="button" id="i-ver-hist">Ver movimientos</button>' : ''}</div>
       <form class="form-inline oculto" id="i-form-saldo"><input class="num fmt" inputmode="numeric" placeholder="¿Cuánto tienes ahora?" aria-label="Saldo actual"><button class="btn btn-primario" type="submit" style="padding:9px 14px">Guardar</button></form>
       <form class="form-inline oculto" id="i-form-entro"><input class="num fmt" inputmode="numeric" placeholder="¿Cuánto te entró?" aria-label="Valor que te entró"><button class="btn btn-primario" type="submit" style="padding:9px 14px">Sumar</button></form>
-      <div class="hist oculto" id="i-hist">${(P.historial || []).map(h => `<div><span>${esc(h.mov)}<br><small class="suave">${fCorta(h.fecha.slice(0, 10))} ${esc(h.fecha.slice(11, 16))}</small></span><span class="num" style="text-align:right">${h.mov.indexOf('Saldo ajustado') === 0 ? '' : (h.valor > 0 ? '+' : '') + money(h.valor)}<br><small class="suave">queda ${money(h.saldo)}</small></span></div>`).join('')}</div>`;
+      <div class="hist oculto" id="i-hist">${(P.historial || []).map(h => `<div><span>${esc(h.mov)}<br><small class="suave">${fCorta(h.fecha.slice(0, 10))} ${esc(h.fecha.slice(11, 16))}</small></span><span class="num" style="text-align:right">${h.mov.indexOf('Saldo ajustado') === 0 ? '' : (h.valor > 0 ? '+' : '') + money(h.valor)}<br><small class="suave">queda ${money(h.saldo)}</small>${h.deshacer ? `<br><button class="btn-mini" type="button" data-deshacer-ing="${h.fila}" aria-label="Deshacer entrada de ${money(h.valor)}">Deshacer</button>` : ''}</span></div>`).join('')}</div>`;
     const formas = [['#i-corregir', '#i-form-saldo'], ['#i-entro', '#i-form-entro']];
     formas.forEach(([b, f]) => { $(b).onclick = () => { $(f).classList.toggle('oculto'); if (!$(f).classList.contains('oculto')) $(f + ' input').focus(); }; $(f + ' input').addEventListener('input', e => { e.target.value = fmtNum(parseNum(e.target.value)); }); });
     $('#i-form-saldo').onsubmit = e => { e.preventDefault(); const v = $('input', e.target).value; if (v === '') return; llamar('actualizarSaldo', [parseNum(v)], 'Saldo actualizado', $('button', e.target)).catch(() => {}); };
     $('#i-form-entro').onsubmit = e => { e.preventDefault(); const v = parseNum($('input', e.target).value); if (!v) return; llamar('registrarIngreso', [v, D.hoy], 'Sumado a tu saldo 🌿', $('button', e.target)).catch(() => {}); };
     if ($('#i-ver-hist')) $('#i-ver-hist').onclick = () => $('#i-hist').classList.toggle('oculto');
+    $$('#i-hist [data-deshacer-ing]').forEach(b => b.onclick = () => dosToques(b, () => llamar('deshacerIngreso', [Number(b.dataset.deshacerIng)], null, b)
+      .then(d => { toast((d && d.deshecho) || 'Entrada deshecha'); const h = $('#i-hist'); if (h) h.classList.remove('oculto'); }).catch(() => {})));
   }
   // Fijos del mes
   $('#i-fijos-titulo').textContent = D.config.DIA_CORTE === 1 ? `Gastos fijos de ${D.periodo.etiqueta.toLowerCase()}` : `Gastos fijos del ${D.periodo.etiqueta}`;
@@ -1635,14 +1674,73 @@ function mostrarResultado(r, cat) {
   if (html) $('#a-resultado').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
 }
 
+const GASTOS_UI = {}; // los gastos que se ven en pantalla, para abrirlos en el editor
 function movHTML(g) {
+  GASTOS_UI[g.id] = g;
   const c = cfgCupo(g.categoria);
   const sub = [g.lugar ? esc(g.categoria) : '', g.hora, g.medio ? esc(g.medio) : '', g.hormiga ? 'hormiga' : ''].filter(Boolean).join(', ');
   return `<div class="item"><span class="e">${esc(c ? c.emoji : '•')}</span><div class="t"><b>${esc(g.lugar || g.categoria)}</b><small>${sub}</small></div>
-    <div class="der"><span class="monto num">${money(g.monto)}</span><button class="btn-mini" type="button" data-borrar="${esc(g.id)}" aria-label="Borrar gasto de ${money(g.monto)}">Borrar</button></div></div>`;
+    <div class="der"><span class="monto num">${money(g.monto)}</span><button class="btn-mini" type="button" data-editar="${esc(g.id)}" aria-label="Editar gasto de ${money(g.monto)}${g.lugar ? ' en ' + esc(g.lugar) : ''}">Editar</button></div></div>`;
 }
 function enlazarBorrar(sel) {
-  $$(sel + ' [data-borrar]').forEach(b => b.onclick = () => dosToques(b, () => llamar('eliminarGasto', [b.dataset.borrar], 'Gasto borrado', b)));
+  $$(sel + ' [data-editar]').forEach(b => b.onclick = () => abrirEditor(b.dataset.editar));
+}
+
+// ---------- Editar gasto ----------
+let ED = null;
+function abrirEditor(id) {
+  const g = GASTOS_UI[id];
+  if (!g) return;
+  ED = { id, g, cat: g.categoria, medio: g.medio || '', meDio: g.meDio || '', valio: g.valio && g.valio !== 'Omitido' ? g.valio : '' };
+  $('#ed-monto').value = fmtNum(g.monto);
+  $('#ed-lugar').value = g.lugar || '';
+  $('#ed-fecha').value = g.fecha || D.hoy;
+  $('#ed-nota').value = g.descripcion || '';
+  $('#ed-hormiga').checked = !!g.hormiga;
+  pintarEditor();
+  $('#editor').classList.remove('oculto');
+  $('#editor').scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  $('#ed-cerrar').focus();
+}
+function cerrarEditor() { $('#editor').classList.add('oculto'); document.body.style.overflow = ''; ED = null; }
+function pintarEditor() {
+  const grupo = (sel, opciones, campo, permiteVacio) => {
+    $(sel).innerHTML = opciones.map(o => `<button type="button" class="pill" data-v="${esc(o.v)}" aria-pressed="${ED[campo] === o.v}">${o.t}</button>`).join('');
+    $$(sel + ' .pill').forEach(b => b.onclick = () => {
+      ED[campo] = permiteVacio && ED[campo] === b.dataset.v ? '' : b.dataset.v;
+      $$(sel + ' .pill').forEach(x => x.setAttribute('aria-pressed', x.dataset.v === ED[campo]));
+    });
+  };
+  const cats = D.cuposConfig.filter(c => c.activo || c.categoria === ED.cat);
+  if (ED.cat && !cats.some(c => c.categoria === ED.cat)) cats.push({ categoria: ED.cat, emoji: '•' });
+  grupo('#ed-cat', cats.map(c => ({ v: c.categoria, t: `${esc(c.emoji || '')} ${esc(c.categoria)}` })), 'cat', false);
+  const medios = D.medios.slice();
+  if (ED.medio && !medios.includes(ED.medio)) medios.push(ED.medio);
+  grupo('#ed-medio', medios.map(m => ({ v: m, t: esc(m) })), 'medio', false);
+  grupo('#ed-dio', (D.meDioOpciones || []).map(m => ({ v: m, t: `${ICONO_DIO[m] || ''} ${esc(m)}` })), 'meDio', true);
+  grupo('#ed-valio', ['Sí', 'Más o menos', 'No'].map(v => ({ v, t: v })), 'valio', true);
+}
+function guardarEdicion(ev) {
+  ev.preventDefault();
+  if (!ED) return;
+  const g = ED.g;
+  const monto = parseNum($('#ed-monto').value);
+  if (!monto) { toast('Escribe el valor del gasto.', true); $('#ed-monto').focus(); return; }
+  const nuevo = { monto, categoria: ED.cat, lugar: $('#ed-lugar').value.trim(), medio: ED.medio, fecha: $('#ed-fecha').value || g.fecha,
+    descripcion: $('#ed-nota').value.trim(), hormiga: $('#ed-hormiga').checked, meDio: ED.meDio, valio: ED.valio };
+  const antes = { monto: g.monto, categoria: g.categoria, lugar: g.lugar || '', medio: g.medio || '', fecha: g.fecha, descripcion: g.descripcion || '',
+    hormiga: !!g.hormiga, meDio: g.meDio || '', valio: g.valio && g.valio !== 'Omitido' ? g.valio : '' };
+  const cambios = {};
+  Object.keys(nuevo).forEach(k => { if (nuevo[k] !== antes[k]) cambios[k] = nuevo[k]; });
+  if (!Object.keys(cambios).length) { cerrarEditor(); return; }
+  llamar('editarGasto', [ED.id, cambios], null, $('#ed-guardar'))
+    .then(d => { toast((d && d.editado) || 'Cambios guardados'); cerrarEditor(); }).catch(() => {});
+}
+function borrarDesdeEditor(ev) {
+  const b = ev.currentTarget;
+  dosToques(b, () => llamar('eliminarGasto', [ED.id], null, b)
+    .then(d => { toast((d && d.borrado) || 'Gasto borrado'); cerrarEditor(); }).catch(() => {}));
 }
 function notaHTML(r) {
   return `<div class="nota ${esc(r.tipo)}"><span class="i">${r.icono}</span><div>${esc(r.texto)}</div></div>`;
@@ -1918,10 +2016,12 @@ function renderAhorro() {
       <div class="barra" role="progressbar" aria-valuenow="${m.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(m.meta)}"><i style="width:${m.pct}%"></i></div>
       ${estado}${cuotas}${conPlan}
       <form class="abonar" data-meta="${esc(m.id)}"><input class="num fmt" inputmode="numeric" placeholder="Abono, ej. 50.000" aria-label="Valor del abono"><button class="btn btn-primario" type="submit" style="padding:10px 16px">Abonar</button></form>
+      ${m.abonos && m.abonos.length ? `<details class="abonos"><summary class="btn-txt">Tus abonos (${m.abonos.length === 8 ? 'los últimos 8' : m.abonos.length})</summary>${m.abonos.map(a => `<div class="item"><span class="e">${a.monto < 0 ? '↩️' : '🌱'}</span><div class="t"><b class="num">${money(a.monto)}</b><small>${fLarga(a.fecha)}${a.nota ? ', ' + esc(a.nota) : ''}</small></div><div class="der"><button class="btn-mini" type="button" data-borrar-abono="${esc(a.id)}" aria-label="Borrar abono de ${money(a.monto)}">Borrar</button></div></div>`).join('')}</details>` : ''}
       <div style="text-align:right;margin-top:8px"><button class="btn-mini" type="button" data-borrar-meta="${esc(m.id)}">Eliminar meta</button></div></div>`;
   }).join('') : '<p class="vacio">Crea tu primera meta: un fondo de emergencia, un viaje, terminar una deuda. Te digo cuánto apartar y con qué plan llegas.</p>';
   $$('.abonar').forEach(f => f.onsubmit = e => { e.preventDefault(); const v = parseNum($('input', f).value); if (!v) { toast('Escribe el valor del abono.', true); return; } llamar('abonarMeta', [f.dataset.meta, v, ''], 'Abono guardado 🌱', $('button', f)); });
   $$('[data-borrar-meta]').forEach(b => b.onclick = () => dosToques(b, () => llamar('eliminarMeta', [b.dataset.borrarMeta], 'Meta eliminada', b)));
+  $$('[data-borrar-abono]').forEach(b => b.onclick = () => dosToques(b, () => llamar('eliminarAbono', [b.dataset.borrarAbono], 'Abono borrado', b)));
   $('#m-fecha').min = D.hoy;
   // Planes
   $('#p-intro').textContent = `Calculados con tus gastos reales de ${D.periodo.etiqueta.toLowerCase()}. Entre más días anotes, más precisos.`;
@@ -2148,9 +2248,13 @@ function pintarBandeja() {
     const detalle = [i.nota && !enlazado ? i.nota : '', otroNombre].filter(Boolean).join(' ');
     return `<div class="item"><span class="e">${enlazado ? '🔗' : ICONO_MOV[i.tipo] || '•'}</span>
       <div class="t"><b>${esc(titulo)}</b><small>${esc(ESTADO_MOV[i.estado] || i.estado)}${detalle ? '. ' + esc(detalle) : ''}</small></div>
-      <div class="der"><span class="monto num">${i.monto ? money(i.monto) : ''}</span>${i.estado === 'Cruzado' ? `<button class="btn-mini" type="button" data-separar="${esc(i.id)}">No era eso</button>` : i.link ? `<a class="btn-mini" href="${esc(i.link)}" target="_blank" rel="noopener">Ver</a>` : ''}</div></div>`;
+      <div class="der"><span class="monto num">${i.monto ? money(i.monto) : ''}</span><span class="acciones-mov">${i.link ? `<a class="btn-mini" href="${esc(i.link)}" target="_blank" rel="noopener">Ver</a>` : ''}${enlazado ? `<button class="btn-mini" type="button" data-separar="${esc(i.id)}">No era eso</button>`
+        : i.estado === 'Ignorado' ? `<button class="btn-mini" type="button" data-recuperar="${esc(i.id)}">Recuperar</button>`
+        : i.estado === 'Registrado' || i.estado === 'Automático' ? `<button class="btn-mini" type="button" data-deshacer="${esc(i.id)}">Deshacer</button>` : ''}</span></div></div>`;
   }).join('') : '<p class="vacio">Todavía nada.</p>';
-  $$('#co-recientes [data-separar]').forEach(btn => btn.onclick = () => llamar('separarMovimiento', [btn.dataset.separar], 'Lo devolví a “Por revisar”', btn).catch(() => {}));
+  $$('#co-recientes [data-separar]').forEach(btn => btn.onclick = () => llamar('separarMovimiento', [btn.dataset.separar], null, btn).then(d => toast((d && d.separado) || 'Lo devolví a “Por revisar”')).catch(() => {}));
+  $$('#co-recientes [data-recuperar]').forEach(btn => btn.onclick = () => llamar('recuperarMovimiento', [btn.dataset.recuperar], null, btn).then(d => toast((d && d.recuperado) || 'Lo devolví a “Por revisar”')).catch(() => {}));
+  $$('#co-recientes [data-deshacer]').forEach(btn => btn.onclick = () => dosToques(btn, () => llamar('recuperarMovimiento', [btn.dataset.deshacer], null, btn).then(d => toast((d && d.recuperado) || 'Lo devolví a “Por revisar”')).catch(() => {})));
   const nombres = b.nombres || [];
   $('#co-nombres').innerHTML = nombres.length ? nombres.map(x => {
     const que = x.que === 'Ignorar' ? 'No es gasto: lo ignoro' : x.que === 'Pago de fijo' || x.que === 'Factura' ? `Pago de ${x.fijo || 'un fijo'}` : `${x.lugar || 'Sin lugar'}${x.categoria ? ', ' + x.categoria : ''}`;
@@ -2255,6 +2359,10 @@ function enlazar() {
   $('#btn-ajustes').onclick = abrirAjustes;
   $('#btn-correo').onclick = abrirCorreo;
   $('#co-cerrar').onclick = cerrarCorreo;
+  $('#ed-cerrar').onclick = cerrarEditor;
+  $('#f-editar').onsubmit = guardarEdicion;
+  $('#ed-borrar').onclick = borrarDesdeEditor;
+  $('#ed-monto').addEventListener('input', e => { e.target.value = fmtNum(parseNum(e.target.value)); });
   $('#co-revisar').onclick = async e => {
     const b = e.currentTarget; b.disabled = true; b.textContent = 'Revisando…';
     try {
@@ -2268,7 +2376,8 @@ function enlazar() {
   $('#aj-cerrar').onclick = cerrarAjustes;
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
-    if (!$('#ajustes').classList.contains('oculto')) cerrarAjustes();
+    if (!$('#editor').classList.contains('oculto')) cerrarEditor();
+    else if (!$('#ajustes').classList.contains('oculto')) cerrarAjustes();
     else if (!$('#correo').classList.contains('oculto')) cerrarCorreo();
     else if (!$('#empezar').classList.contains('oculto')) cerrarEmpezar();
   });
