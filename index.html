@@ -54,13 +54,68 @@ button,input,select{font:inherit;color:inherit}
 .por-dia{margin-top:12px;font-size:16px;line-height:1.35;color:var(--luz);font-weight:600}
 .por-dia.mal{color:#F2A58C}
 .hoy-lleva{margin-top:4px;font-size:14px;color:rgba(246,239,166,.7)}
-.racha{margin-top:12px;display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.35;padding:8px 12px;border-radius:14px;background:rgba(246,239,166,.09);color:var(--rayo)}
-.racha .e{font-size:18px;line-height:1.1}
-.racha b{font-weight:650;color:#fff}
-.racha.mal{background:rgba(242,165,140,.1);color:#F6D3C6}
-.racha.mal b{color:#F2A58C}
-.racha-mes{display:flex;gap:10px;align-items:center;margin:0 0 14px;padding:12px 14px;border-radius:16px;background:var(--luz-claro);font-size:14.5px}
-.racha-mes .e{font-size:22px}
+.jardin{position:relative;margin-top:18px;padding-top:16px;border-top:1px solid rgba(246,239,166,.14)}
+.uso-txt{font-size:15px;color:rgba(246,239,166,.82)}
+.uso-txt b{font-size:24px;line-height:1;font-weight:750;color:#fff;letter-spacing:-.02em;margin:0 3px;font-variant-numeric:tabular-nums}
+.uso-barra{position:relative;height:8px;border-radius:99px;background:rgba(246,239,166,.13);margin:9px 0 12px;overflow:hidden}
+.uso-barra i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--luz);transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.uso-barra.pasado i{background:var(--dorado)}
+.macetas{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px}
+.maceta{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 0 4px;border:0;border-radius:14px;background:none;color:var(--rayo);font:inherit;cursor:pointer;min-height:64px}
+.maceta svg{width:100%;max-width:40px;height:46px;display:block;overflow:visible}
+.maceta span{font-size:12px;color:rgba(246,239,166,.58)}
+.maceta.hoy{background:rgba(246,239,166,.08)}
+.maceta.hoy span{color:var(--rayo);font-weight:700}
+.maceta[aria-pressed="true"]{box-shadow:inset 0 0 0 1.5px rgba(246,239,166,.55)}
+.maceta:focus-visible{outline:2px solid var(--rayo);outline-offset:1px}
+.maceta.vacia svg{opacity:.42}
+.maceta .pl{transform-origin:20px 31px}
+.jardin.animar .maceta .pl{animation:crecer .75s cubic-bezier(.2,.8,.2,1.15) both;animation-delay:calc(var(--i) * 70ms + .15s)}
+@keyframes crecer{from{transform:scale(.25,.1);opacity:0}to{transform:none;opacity:1}}
+.jardin-nota{margin:8px 2px 0;font-size:13.5px;line-height:1.45;color:rgba(246,239,166,.8);min-height:2.9em}
+.jardin-nota b{color:#fff;font-weight:650}
+.dio-ayuda{margin:8px 2px 0;font-size:13px;color:var(--gris);min-height:1.3em}
+.legend-opc{font-weight:400;color:var(--gris);font-size:13px;margin-left:4px}
+.valio{display:grid;gap:12px}
+.valio-top{display:flex;gap:12px;align-items:center}
+.valio-e{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--luz-claro);font-size:22px;flex:none}
+.valio-top b{display:block;font-size:16px}
+.valio-top small{display:block;color:var(--gris);font-size:13.5px;margin-top:2px}
+.valio-opc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.valio-opc .pill{min-height:46px;font-weight:600;padding:8px 6px;white-space:nowrap;justify-content:center}
+.valio-omitir{justify-self:start;margin-top:-4px}
+.mapa{display:grid;gap:4px}
+.mapa-fila{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--linea)}
+.mapa>.mapa-fila:last-child{border-bottom:0}
+.mapa-fila+.mapa-dist{border-top:0;margin-top:2px}
+.mapa>.mapa-dist:first-child{border-top:0;margin-top:0;padding-top:0}
+.mapa-ic{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:var(--luz-claro);font-size:17px}
+.mapa-fila small{display:block;color:var(--gris);font-size:12.5px}
+.mapa-fila b{display:block;font-size:15px;font-weight:600}
+.mapa-m{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.mapa-dist{margin-top:10px;padding-top:12px;border-top:1px solid var(--linea)}
+.mapa-dist h3{margin:0 0 8px;font-size:13.5px;font-weight:600;color:var(--gris)}
+.dist-fila{display:grid;grid-template-columns:1fr auto;gap:5px 10px;align-items:baseline;font-size:14px;margin:10px 0}
+.dist-fila .m{text-align:right;font-variant-numeric:tabular-nums;color:var(--gris);font-size:13px}
+.dist-fila .m b{color:var(--tinta);font-weight:650;font-size:14px;margin-right:4px}
+.dist-barra{grid-column:1/-1;height:8px;border-radius:99px;background:var(--luz-claro);overflow:hidden}
+.dist-barra i{display:block;height:100%;border-radius:99px;background:var(--hoja)}
+.mapa-rango{display:flex;align-items:center;gap:8px;margin:-2px 0 12px;flex-wrap:wrap}
+.mapa-rango .pill{padding:6px 14px}
+.mapa-rango small{color:var(--gris);font-size:13px;margin-left:2px}
+.valio-barra{display:flex;gap:2px;height:12px;margin:2px 0 8px}
+.valio-barra i{display:block;height:100%;min-width:6px}
+.valio-barra i:first-child{border-radius:99px 0 0 99px}
+.valio-barra i:last-child{border-radius:0 99px 99px 0}
+.valio-barra i:only-child{border-radius:99px}
+.valio-ley{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13.5px;color:var(--tinta)}
+.valio-ley span{display:inline-flex;align-items:center;gap:6px}
+.valio-ley span::before{content:'';width:9px;height:9px;border-radius:50%;background:var(--c)}
+.cambio{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4;margin:8px 0}
+.cambio .e{flex:none;width:22px;text-align:center}
+.plan-meses{display:flex;gap:12px;align-items:center;margin:0 0 14px;padding:12px 14px;border-radius:16px;background:var(--luz-claro);font-size:14.5px}
+.plan-meses .e{font-size:22px}
+@media (prefers-reduced-motion:reduce){.jardin.animar .maceta .pl{animation:none}.uso-barra i{transition:none}}
 
 /* ---------- Vistas ---------- */
 main{padding:6px 18px 0}
@@ -408,9 +463,9 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
         <div class="de" id="d-de">&nbsp;</div>
         <div class="por-dia" id="d-pordia">&nbsp;</div>
         <div class="hoy-lleva" id="d-hoy">&nbsp;</div>
-        <div class="racha" id="d-racha" hidden></div>
       </div>
     </div>
+    <div class="jardin" id="d-jardin" hidden></div>
   </header>
 
   <main>
@@ -422,8 +477,14 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
         <p class="peq suave" style="margin:14px 0 8px">O toca uno de los de siempre:</p>
         <div class="siempre" id="i-siempre"></div>
       </div>
+      <div id="i-valio-wrap"></div>
       <h2>Tu plata</h2>
       <div class="panel" id="i-plata"></div>
+      <div id="i-mapa-wrap" class="oculto">
+        <h2>Lo que te dio tu plata</h2>
+        <div class="mapa-rango" id="i-mapa-rango" role="group" aria-label="Qué periodo ver"></div>
+        <div class="panel mapa" id="i-mapa"></div>
+      </div>
       <h2 id="i-fijos-titulo">Gastos fijos del mes</h2>
       <p class="peq suave" id="i-fijos-resumen" style="margin-top:-4px"></p>
       <div class="lista" id="i-fijos"></div>
@@ -449,6 +510,7 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
         <datalist id="dl-lugares"></datalist>
         <div class="promo-hint" id="promo-hint" aria-live="polite"></div>
         <fieldset><legend>¿Cómo pagaste?</legend><div class="chips-medio" id="chips-medio"></div></fieldset>
+        <fieldset><legend>¿Qué te dio este gasto?<span class="legend-opc">opcional</span></legend><div class="chips-medio" id="chips-dio"></div><p class="dio-ayuda" id="dio-ayuda" aria-live="polite">Te ayuda a ver para qué se te va la plata, no solo en qué.</p></fieldset>
         <div class="fila-2">
           <div><label class="lbl" for="fecha">Fecha</label><input type="date" id="fecha"></div>
           <div><label class="lbl" for="nota">Nota</label><input id="nota" placeholder="Opcional"></div>
@@ -524,7 +586,7 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
 
     <!-- ================= AHORRO ================= -->
     <section class="vista" id="v-ahorro" aria-label="Ahorro">
-      <div class="racha-mes" id="m-racha" hidden></div>
+      <div class="plan-meses" id="m-plan" hidden></div>
       <h2>Tus metas</h2>
       <div id="m-metas"></div>
       <details class="desplegable" id="m-nueva-box">
@@ -711,6 +773,15 @@ const plural = (n, a, b) => n + ' ' + (n === 1 ? a : b);
 const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const desB64u = t => { let b = String(t).replace(/-/g, '+').replace(/_/g, '/'); while (b.length % 4) b += '='; return Uint8Array.from(atob(b), c => c.charCodeAt(0)); };
 const ICONO_HUELLA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M7.5 4.6A8.5 8.5 0 0 1 20.5 12"/><path d="M4.1 8.4A8.5 8.5 0 0 0 3.5 12c0 2 .5 3.7 1.4 5.2"/><path d="M8 19.8c-1.5-2.2-2.3-4.7-2.3-7.3a6.3 6.3 0 0 1 12.6 0"/><path d="M12 12.5c0 3.2.9 6.1 2.6 8.4"/><path d="M9.1 12.4a2.9 2.9 0 0 1 5.8 0c0 2.1.4 4.1 1.2 5.9"/><path d="M18.3 15.4c.1 1.3.4 2.5.8 3.7"/><path d="M12 9.6c-1.6 0-2.9 1.3-2.9 2.9 0 2.9.9 5.6 2.6 7.8"/></svg>';
+const ICONO_DIO = { 'Un premio': '🎁', 'Alivio': '🌤️', 'Compartir': '🤝', 'Lo necesitaba': '🧺', 'Crecer': '🌱', 'Costumbre': '🔁' };
+const AYUDA_DIO = {
+  'Un premio': 'Te lo diste porque te lo ganaste.',
+  'Alivio': 'Te calmó o te consentiste en un momento pesado.',
+  'Compartir': 'Fue con alguien o para alguien.',
+  'Lo necesitaba': 'Era necesario, sin más.',
+  'Crecer': 'Un libro, un curso, algo que te aporta a largo plazo.',
+  'Costumbre': 'Salió en automático, casi sin pensarlo.'
+};
 const listaBonita = arr => arr.length <= 1 ? (arr[0] || '') : arr.slice(0, -1).join(', ') + ' y ' + arr[arr.length - 1];
 
 // La misma pantalla funciona dentro de Apps Script (google.script.run)
@@ -866,31 +937,70 @@ function pintarHoja(pct, est) {
   const aplicar = () => { r.style.transform = `translateY(${r.dataset.desp}px)`; };
   if (!hojaAnimada) { hojaAnimada = true; requestAnimationFrame(() => requestAnimationFrame(aplicar)); } else { r.style.transition = 'none'; aplicar(); }
 }
-// Racha: días seguidos sin pasarte de lo que puedes gastar en el día (se cierra cada noche con el recordatorio)
-function pintarRacha(P) {
-  const box = $('#d-racha');
-  const R = D.racha;
-  if (!R || !(P.porDia > 0)) { box.hidden = true; return; }
-  const planta = n => n >= 7 ? '🌳' : n >= 3 ? '🌿' : '🌱';
-  const dias = n => plural(n, 'día', 'días');
-  const queda = P.porDia - D.hoyTotal; // cuenta todo, también lo de crédito
-  const hora = (R.hora > 12 ? R.hora - 12 : R.hora) + (R.hora >= 12 ? '\u00a0p.\u00a0m.' : '\u00a0a.\u00a0m.');
-  const conCredito = D.hoyTotal > P.hoyCaja;
-  let e = planta(R.dias), t = '', mal = false;
-  if (R.cerradoHoy) {
-    if (R.dias > 0) t = `<b>Racha de ${dias(R.dias)}</b>${R.dias > 1 && R.dias >= R.mejor ? ', tu mejor hasta hoy' : ''}. Mañana va por el ${R.dias + 1}.`;
-    else { e = '🍂'; mal = true; t = '<b>Hoy te pasaste del cupo.</b> Mañana empieza una racha nueva.'; }
-  } else if (queda < 0) {
-    e = '🍂'; mal = true;
-    t = `<b>${conCredito ? 'Contando lo de crédito, hoy vas' : 'Hoy vas'} ${money(-queda)} por encima.</b> ${R.dias ? `Tu racha de ${dias(R.dias)} se corta esta noche.` : 'Mañana empiezas una racha nueva.'}`;
-  } else if (R.dias > 0) {
-    t = `<b>Racha de ${dias(R.dias)}.</b> Si hoy no pasas de ${money(P.porDia)}${conCredito ? ' (contando lo de crédito)' : ''}, a las ${hora} llegas a ${R.dias + 1}.`;
-  } else {
-    t = `<b>Empieza tu racha:</b> si hoy no pasas de ${money(P.porDia)}${conCredito ? ' (contando lo de crédito)' : ''}, a las ${hora} cuenta tu primer día.`;
-  }
-  box.className = 'racha' + (mal ? ' mal' : '');
-  box.innerHTML = `<span class="e" aria-hidden="true">${e}</span><span>${t}</span>`;
+// ---------- Jardín de la semana ----------
+// Una planta por día: sana si no pasaste de tu cupo (gastar menos no da premio extra),
+// amarilla si te pasaste (se recupera si la semana cierra bajo el 100%), semilla si no anotaste nada.
+const DIAS_LARGOS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+let jardinAnimado = false;
+function plantaSVG(estado) {
+  const maceta = '<path d="M10.5 33.5h19l-2.3 9.6a2.4 2.4 0 0 1-2.3 1.9h-9.8a2.4 2.4 0 0 1-2.3-1.9Z" fill="currentColor" opacity=".17"/><rect x="8.5" y="30.6" width="23" height="4.4" rx="2.2" fill="currentColor" opacity=".3"/>';
+  const vena = '<path d="M11.6 17.4c2.7 2.1 5.2 4.2 8.4 7M28.6 13.4c-2.5 1.9-4.8 3.7-8.6 6.4" fill="none" stroke="#1D3313" stroke-opacity=".38" stroke-width=".9" stroke-linecap="round"/>';
+  const sana = (izq, der) => `<g class="pl"><path d="M20 31V14.6" stroke="#9CCB3A" stroke-width="1.9" stroke-linecap="round"/><path d="M20 25.2c-7.6.3-10.8-4.5-11.2-9.6 5.7-.2 10.8 3.1 11.2 9.6Z" fill="${izq}"/><path d="M20 20.6c6.9.2 10.1-4.1 10.6-8.8-5.3-.2-10.1 2.7-10.6 8.8Z" fill="${der}"/><path d="M20 15.6c-2-2.7-1.7-6.4 0-9 1.7 2.6 2 6.3 0 9Z" fill="#CFEA82"/>${vena}</g>`;
+  const p = {
+    bien: sana('#B5DE4C', '#9CCB3A'),
+    recuperada: sana('#E2B13C', '#9CCB3A') + '<circle cx="31" cy="8" r="1.3" fill="#F6EFA6"/><circle cx="34" cy="12.5" r=".9" fill="#F6EFA6" opacity=".7"/>',
+    pasado: '<g class="pl"><path d="M20 31c0-5.2.7-8.7 3.6-11.8" fill="none" stroke="#C9962A" stroke-width="1.9" stroke-linecap="round"/><path d="M21.2 22.4c-6.7 2.4-10.9.4-12.8-3.7 5.1-2 10.2-1.3 12.8 3.7Z" fill="#E2B13C"/><path d="M23.6 19.4c5.8 2.9 9.7 1.6 11.7-2.2-4.5-2.3-9.3-2.2-11.7 2.2Z" fill="#C9962A"/></g><path d="M26.4 30.7c2.6-.9 4.8-.2 5.8 1.4-2.5.9-4.7.3-5.8-1.4Z" fill="#E2B13C" opacity=".85"/>',
+    semilla: '<ellipse cx="20" cy="29.6" rx="2.7" ry="1.8" fill="currentColor" opacity=".5"/>',
+    brote: '<g class="pl"><path d="M20 31v-6" stroke="#9CCB3A" stroke-width="1.7" stroke-linecap="round"/><path d="M20 26.5c-3.6.1-5.1-2.1-5.3-4.5 2.7-.1 5.1 1.4 5.3 4.5Z" fill="#B5DE4C"/><path d="M20 25.4c3.3.1 4.8-2 5-4.2-2.5-.1-4.8 1.3-5 4.2Z" fill="#9CCB3A"/></g>',
+    futuro: '', antes: ''
+  };
+  return `<svg viewBox="0 0 40 46" aria-hidden="true">${p[estado] || ''}${maceta}</svg>`;
+}
+function notaJardin(J) {
+  if (!J.evaluados) return J.dias.some(d => d.hoy && d.estado === 'brote')
+    ? 'Tu jardín de la semana empieza aquí. Cada día que no pases de lo que tienes para gastar, crece una planta.'
+    : 'Tu jardín de la semana empieza hoy.';
+  const pasadas = J.dias.filter(d => d.estado === 'pasado' && !d.hoy).length;
+  let t = `<b>${J.sanos} de ${plural(J.evaluados, 'día', 'días')}</b> en tu cupo · la semana va en <b>${J.pctSemana}%</b>`;
+  if (pasadas) t += `. ${pasadas === 1 ? 'La planta amarilla se recupera' : 'Las plantas amarillas se recuperan'} si la semana vuelve a quedar bajo el 100%.`;
+  return t;
+}
+function detalleDia(d) {
+  const dia = d.hoy ? 'Hoy' : `${DIAS_LARGOS['LMXJVSD'.indexOf(d.letra)]} ${Number(d.fecha.slice(8))}`;
+  const cuanto = `${money(d.gastado)} de ${money(d.cupo)}`;
+  return {
+    bien: `<b>${dia}:</b> usaste el ${d.pct}% (${cuanto}).`,
+    recuperada: `<b>${dia}:</b> llegaste al ${d.pct}% (${cuanto}), pero la semana lo compensó. Se recuperó.`,
+    pasado: d.hoy ? `<b>Hoy</b> vas en ${d.pct}% (${cuanto}). Pasa: si la semana cierra bajo el 100%, esta planta se recupera.`
+      : `<b>${dia}:</b> llegaste al ${d.pct}% (${cuanto}). Se recupera si la semana cierra bajo el 100%.`,
+    semilla: `<b>${dia}:</b> sin gastos anotados. Si gastaste algo, anótalo con esa fecha y la planta crece.`,
+    brote: '<b>Hoy</b> todavía no anotas nada. La planta crece con lo que anotes.',
+    futuro: `<b>${dia}:</b> todavía no llega.`,
+    antes: `<b>${dia}:</b> antes de que empezaras a usar la app.`
+  }[d.estado] || '';
+}
+function pintarJardin() {
+  const box = $('#d-jardin');
+  const J = D.jardin;
+  if (!J) { box.hidden = true; return; }
+  const h = J.hoy;
+  const pasado = h.pct > 100;
+  box.innerHTML = `
+    <div class="uso-txt">Hoy usaste<b>${h.pct}%</b>de tu cupo</div>
+    <div class="uso-barra${pasado ? ' pasado' : ''}" role="img" aria-label="Hoy usaste el ${h.pct}% de tu cupo de ${money(h.cupo)}"><i style="width:0"></i></div>
+    <div class="macetas" role="group" aria-label="Tu semana, de lunes a domingo">
+      ${J.dias.map((d, i) => `<button type="button" class="maceta${d.hoy ? ' hoy' : ''}${d.estado === 'futuro' || d.estado === 'antes' ? ' vacia' : ''}" style="--i:${i}" data-i="${i}" aria-pressed="false" aria-label="${DIAS_LARGOS[i]}">${plantaSVG(d.estado)}<span>${d.letra}</span></button>`).join('')}
+    </div>
+    <p class="jardin-nota" id="d-jardin-nota" aria-live="polite">${notaJardin(J)}</p>`;
   box.hidden = false;
+  if (!jardinAnimado) { jardinAnimado = true; box.classList.add('animar'); setTimeout(() => box.classList.remove('animar'), 1800); }
+  requestAnimationFrame(() => requestAnimationFrame(() => { $('.uso-barra i', box).style.width = Math.min(h.pct, 100) + '%'; }));
+  $$('.maceta', box).forEach(b => b.onclick = () => {
+    const activo = b.getAttribute('aria-pressed') === 'true';
+    $$('.maceta', box).forEach(x => x.setAttribute('aria-pressed', 'false'));
+    b.setAttribute('aria-pressed', String(!activo));
+    $('#d-jardin-nota').innerHTML = activo ? notaJardin(J) : detalleDia(J.dias[Number(b.dataset.i)]);
+  });
 }
 
 function renderDosel() {
@@ -913,10 +1023,11 @@ function renderDosel() {
     }
     $('#d-hoy').textContent = P.hoyCaja ? `Hoy llevas ${money(P.hoyCaja)}${D.hoyTotal > P.hoyCaja ? ` de tu cuenta y ${money(D.hoyTotal - P.hoyCaja)} con crédito` : ''}`
       : D.hoyN ? `Hoy anotaste ${money(D.hoyTotal)} con crédito: no sale de tu cuenta hoy` : 'Hoy no has anotado gastos';
-    pintarRacha(P);
+    pintarJardin();
     return;
   }
   const p = D.periodo;
+  $('#d-jardin').hidden = true;
   $('#d-titulo').innerHTML = `${esc(saludoHora(D.ahora))}${D.nombre ? ', ' + esc(D.nombre) : ''} <span class="fecha">${esc(p.etiqueta)}, día ${p.transcurridos} de ${p.dias}</span>`;
   $('#d-label').textContent = 'Llevas gastado este mes';
   S.sinSaldo = true;
@@ -1014,6 +1125,10 @@ function irDesdeAviso(v) {
   if (!v) return;
   if (!D || !$('#candado').classList.contains('oculto')) { S.irPendiente = v; return; }
   if (v === 'correo') abrirCorreo();
+  else if (v === 'mes') {
+    S.mapaVista = 'mes'; irA('inicio'); pintarMapa();
+    setTimeout(() => { const w = $('#i-mapa-wrap'); if (!w.classList.contains('oculto')) w.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 250);
+  }
   else irA(['inicio', 'anotar', 'cupos', 'hormiga', 'ahorro', 'promos'].includes(v) ? v : 'inicio');
 }
 function cerrarCandado() { $('#candado').classList.add('oculto'); document.body.style.overflow = ''; CA.pin = ''; CA.actual = ''; CA.nuevo = ''; }
@@ -1228,6 +1343,7 @@ async function pintarAvisos() {
  * ============================================================ */
 function renderInicio() {
   const P = D.plata || {};
+  try { pintarMapa(); } catch (e) { console.error(e); }
   // Avisos: empezar, pago de nómina, correo
   let avisos = '';
   if (!P.configurado) {
@@ -1420,6 +1536,14 @@ function renderAnotar() {
   if (!S.medio) S.medio = D.medios[0] || '';
   $('#chips-medio').innerHTML = D.medios.map(m => `<button type="button" class="pill" data-m="${esc(m)}" aria-pressed="${S.medio === m}">${esc(m)}</button>`).join('');
   $$('#chips-medio .pill').forEach(b => b.onclick = () => { S.medio = b.dataset.m; $$('#chips-medio .pill').forEach(x => x.setAttribute('aria-pressed', x === b)); promoHint(); });
+  const opcDio = D.meDioOpciones || [];
+  if (S.meDio && !opcDio.includes(S.meDio)) S.meDio = '';
+  $('#chips-dio').innerHTML = opcDio.map(m => `<button type="button" class="pill" data-d="${esc(m)}" aria-pressed="${S.meDio === m}">${ICONO_DIO[m] || ''} ${esc(m)}</button>`).join('');
+  $$('#chips-dio .pill').forEach(b => b.onclick = () => {
+    S.meDio = S.meDio === b.dataset.d ? '' : b.dataset.d;
+    $$('#chips-dio .pill').forEach(x => x.setAttribute('aria-pressed', x.dataset.d === S.meDio));
+    $('#dio-ayuda').textContent = S.meDio ? AYUDA_DIO[S.meDio] : 'Te ayuda a ver para qué se te va la plata, no solo en qué.';
+  });
   $('#dl-lugares').innerHTML = D.lugares.map(l => `<option value="${esc(l)}">`).join('');
   if (!$('#fecha').value) $('#fecha').value = D.hoy;
   $('#fecha').max = D.hoy;
@@ -1483,14 +1607,15 @@ async function guardarGasto(ev) {
   const monto = parseNum($('#monto').value);
   if (!monto) { toast('Escribe cuánto gastaste.', true); $('#monto').focus(); return; }
   if (!S.cat) { toast('Elige en qué gastaste.', true); $('#chips-cat').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
-  const g = { monto, categoria: S.cat, lugar: $('#lugar').value.trim(), medio: S.medio, fecha: $('#fecha').value || D.hoy, descripcion: $('#nota').value.trim(), hormiga: $('#hormiga').checked };
+  const g = { monto, categoria: S.cat, lugar: $('#lugar').value.trim(), medio: S.medio, fecha: $('#fecha').value || D.hoy, descripcion: $('#nota').value.trim(), hormiga: $('#hormiga').checked, meDio: S.meDio || '' };
   const btn = $('#btn-guardar');
   btn.disabled = true; btn.textContent = 'Guardando…';
   try {
     const r = await api('registrarGasto', g);
     D = r.data;
     $('#monto').value = ''; $('#lugar').value = ''; $('#nota').value = ''; $('#fecha').value = D.hoy;
-    const cat = g.categoria; S.cat = ''; S.hormigaManual = null;
+    const cat = g.categoria; S.cat = ''; S.hormigaManual = null; S.meDio = '';
+    $('#dio-ayuda').textContent = 'Te ayuda a ver para qué se te va la plata, no solo en qué.';
     render();
     mostrarResultado(r, cat);
     toast(r.cruce || 'Gasto guardado');
@@ -1771,12 +1896,13 @@ function pintarEditorFijos() {
  *  AHORRO
  * ============================================================ */
 function renderAhorro() {
-  const RM = D.racha || {};
-  const rm = $('#m-racha');
-  if (RM.meses > 0) {
-    rm.innerHTML = `<span class="e" aria-hidden="true">🏆</span><div><b>${plural(RM.meses, 'mes seguido', 'meses seguidos')} cumpliendo tu plan de ahorro</b><br><small class="suave">Cuenta cuando cierras el mes abonando lo que le tocaba a una meta, con menos gastos hormiga o sin pasarte de tus cupos.</small></div>`;
-    rm.hidden = false;
-  } else rm.hidden = true;
+  const PM = D.planMeses || { cumplidos: 0, de: 0 };
+  const pm = $('#m-plan');
+  if (PM.cumplidos > 0) {
+    const cuanto = PM.de === 1 ? 'el mes pasado' : `en ${PM.cumplidos} de tus últimos ${PM.de} meses`;
+    pm.innerHTML = `<span class="e" aria-hidden="true">🏆</span><div><b>Cumpliste tu plan de ahorro ${cuanto}</b><br><small class="suave">Cuenta cuando cierras el mes abonándole a una meta, con menos gastos hormiga o sin pasarte de tus cupos. Un mes flojo no borra los demás.</small></div>`;
+    pm.hidden = false;
+  } else pm.hidden = true;
   const planes = D.planes.planes;
   const nombrePlan = id => (planes.find(p => p.id === id) || {}).nombre || '';
   $('#m-metas').innerHTML = D.metas.length ? D.metas.map(m => {
@@ -1881,6 +2007,82 @@ function renderAvisoCorreo() {
     box.innerHTML = n ? `<div class="nota ok"><span class="i">📬</span><div><b>${plural(n, 'movimiento', 'movimientos')} de tu correo por revisar</b><button class="btn-txt" type="button" id="a-ir-correo">Revisarlos</button></div></div>` : '';
     if (n) $('#a-ir-correo').onclick = abrirCorreo;
   }
+  pintarValio();
+}
+
+// Al día siguiente, solo para gustos y salidas: ¿valió la pena?
+function pintarValio() {
+  const box = $('#i-valio-wrap');
+  const q = D.valioPregunta;
+  box.innerHTML = '';
+  if (!q) return;
+  const cuando = q.fecha === sumarDiasUI(D.hoy, -1) ? 'Ayer' : 'Antier';
+  const det = [q.lugar || q.categoria, money(q.monto), q.meDio ? (ICONO_DIO[q.meDio] || '') + ' ' + q.meDio : ''].filter(Boolean).join(' · ');
+  box.innerHTML = `<div class="panel valio" id="i-valio" style="margin-top:16px">
+    <div class="valio-top"><span class="valio-e" aria-hidden="true">🌿</span><div><b>¿Valió la pena?</b><small>${cuando}: ${esc(det)}</small></div></div>
+    <div class="valio-opc">${['Sí', 'Más o menos', 'No'].map(v => `<button type="button" class="pill" data-v="${v}">${v}</button>`).join('')}</div>
+    <button type="button" class="btn-txt valio-omitir" data-v="Omitido">Ahora no</button></div>`;
+  const RESP = { 'Sí': 'Qué bien. Lo tengo en cuenta para tu resumen del domingo.', 'Más o menos': 'Anotado. También sirve saberlo.', 'No': 'Anotado. Saberlo es lo que ayuda a la próxima.', 'Omitido': 'Listo, no te pregunto por ese.' };
+  $$('#i-valio [data-v]').forEach(b => b.onclick = () => llamar('valioLaPena', [q.id, b.dataset.v], RESP[b.dataset.v], b).catch(() => {}));
+}
+function sumarDiasUI(f, n) { const d = new Date(f + 'T12:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
+
+function pintarMapa() {
+  const wrap = $('#i-mapa-wrap');
+  const MM = D.mapaMes;
+  let vista = S.mapaVista || (() => { try { return localStorage.getItem('eqg_mapa') || 'semana'; } catch (e) { return 'semana'; } })();
+  if (vista === 'mes' && !MM) vista = 'semana';
+  if (vista === 'semana' && !D.mapa && MM) vista = 'mes';
+  const M = vista === 'mes' ? MM && MM.mapa : D.mapa;
+  if (!M) { wrap.classList.add('oculto'); return; }
+  const rango = $('#i-mapa-rango');
+  const ambos = !!(D.mapa && MM);
+  const sub = vista === 'mes' ? `Del ${fCorta(MM.desde)} a hoy` : ambos ? '' : 'Últimos 7 días';
+  rango.innerHTML = (ambos ? ['semana', 'mes'].map(r => `<button type="button" class="pill" data-r="${r}" aria-pressed="${vista === r}">${r === 'mes' ? 'Este mes' : '7 días'}</button>`).join('') : '') + (sub ? `<small>${sub}</small>` : '');
+  $$('#i-mapa-rango .pill').forEach(b => b.onclick = () => {
+    S.mapaVista = b.dataset.r;
+    try { localStorage.setItem('eqg_mapa', S.mapaVista); } catch (e) {}
+    pintarMapa();
+  });
+  const filas = [];
+  const sitio = x => esc(x.categoria) + (x.lugar ? ` · ${esc(x.lugar)}` : '');
+  if (M.masVale) filas.push(`<div class="mapa-fila"><span class="mapa-ic" aria-hidden="true">💚</span><div><small>Lo que más valió la pena</small><b>${sitio(M.masVale)}</b></div><span class="mapa-m">${money(M.masVale.monto)}</span></div>`);
+  if (M.menosVale) filas.push(`<div class="mapa-fila"><span class="mapa-ic" aria-hidden="true">🍂</span><div><small>Lo que menos</small><b>${sitio(M.menosVale)}</b></div><span class="mapa-m">${money(M.menosVale.monto)}</span></div>`);
+  if (M.automatico.n) filas.push(`<div class="mapa-fila"><span class="mapa-ic" aria-hidden="true">🔁</span><div><small>En automático</small><b>${plural(M.automatico.n, 'gasto', 'gastos')} por costumbre</b></div><span class="mapa-m">${money(M.automatico.monto)}</span></div>`);
+  if (M.crecer.n) filas.push(`<div class="mapa-fila"><span class="mapa-ic" aria-hidden="true">🌱</span><div><small>Invertiste en ti</small><b>${plural(M.crecer.n, 'gasto', 'gastos')} para crecer</b></div><span class="mapa-m">${money(M.crecer.monto)}</span></div>`);
+  const secciones = [];
+  // Para qué se fue la plata (porcentaje de lo que marcaste)
+  const tipos = Object.keys(M.porMeDio || {}).sort((a, b) => M.porMeDio[b].monto - M.porMeDio[a].monto);
+  if (tipos.length >= 2) {
+    const max = M.porMeDio[tipos[0]].monto;
+    secciones.push(`<div class="mapa-dist"><h3>Para qué se fue la plata</h3>${tipos.map(t => {
+      const x = M.porMeDio[t], pct = Math.round(x.monto / M.marcado.monto * 100);
+      return `<div class="dist-fila"><span>${ICONO_DIO[t] || ''} ${esc(t)}</span><span class="m"><b>${pct}%</b>${money(x.monto)}</span><span class="dist-barra" aria-hidden="true"><i style="width:${Math.max(3, Math.round(x.monto / max * 100))}%"></i></span></div>`;
+    }).join('')}</div>`);
+  }
+  // ¿Valió la pena?
+  const V = M.valio || { si: { n: 0 }, medio: { n: 0 }, no: { n: 0 } };
+  const cal = V.si.n + V.medio.n + V.no.n;
+  if (cal) {
+    const seg = [['si', 'Sí', 'var(--hoja)'], ['medio', 'Más o menos', 'var(--dorado)'], ['no', 'No', 'var(--otono)']].filter(x => V[x[0]].n);
+    secciones.push(`<div class="mapa-dist"><h3>¿Valió la pena? · ${V.si.n} de ${plural(cal, 'gusto que calificaste', 'gustos que calificaste')}</h3>
+      <div class="valio-barra" role="img" aria-label="${seg.map(x => `${x[1]}: ${V[x[0]].n}`).join(', ')}">${seg.map(x => `<i style="flex:${V[x[0]].n};background:${x[2]}"></i>`).join('')}</div>
+      <div class="valio-ley">${seg.map(x => `<span style="--c:${x[2]}">${x[1]} ${V[x[0]].n}</span>`).join('')}</div></div>`);
+  }
+  // Frente al mes pasado, a esta misma altura
+  if (vista === 'mes' && MM.cambios.length) {
+    const frase = c => {
+      const cuanto = `${money(Math.abs(c.dif))} ${c.dif < 0 ? 'menos' : 'más'}`;
+      if (c.meDio === 'Costumbre') return { e: c.dif < 0 ? '🌿' : '🔁', t: `<b>Por costumbre</b> van ${money(c.ahora)}: ${cuanto} que a esta altura del mes pasado.` };
+      return { e: ICONO_DIO[c.meDio] || '', t: `<b>${esc(c.meDio)}</b>: ${money(c.ahora)}, ${cuanto} que el mes pasado a esta altura.` };
+    };
+    secciones.push(`<div class="mapa-dist"><h3>Frente al mes pasado</h3>${MM.cambios.map(frase).map(x => `<div class="cambio"><span class="e" aria-hidden="true">${x.e}</span><span>${x.t}</span></div>`).join('')}</div>`);
+  } else if (vista === 'mes' && !MM.comparable) {
+    secciones.push(`<div class="mapa-dist"><p class="peq suave" style="margin:0">Desde el próximo mes te muestro cómo cambió frente a este.</p></div>`);
+  }
+  if (!filas.length && !secciones.length) { wrap.classList.add('oculto'); return; }
+  $('#i-mapa').innerHTML = filas.join('') + secciones.join('');
+  wrap.classList.remove('oculto');
 }
 
 function abrirCorreo() {
