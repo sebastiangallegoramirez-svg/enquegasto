@@ -54,6 +54,13 @@ button,input,select{font:inherit;color:inherit}
 .por-dia{margin-top:12px;font-size:16px;line-height:1.35;color:var(--luz);font-weight:600}
 .por-dia.mal{color:#F2A58C}
 .hoy-lleva{margin-top:4px;font-size:14px;color:rgba(246,239,166,.7)}
+.racha{margin-top:12px;display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.35;padding:8px 12px;border-radius:14px;background:rgba(246,239,166,.09);color:var(--rayo)}
+.racha .e{font-size:18px;line-height:1.1}
+.racha b{font-weight:650;color:#fff}
+.racha.mal{background:rgba(242,165,140,.1);color:#F6D3C6}
+.racha.mal b{color:#F2A58C}
+.racha-mes{display:flex;gap:10px;align-items:center;margin:0 0 14px;padding:12px 14px;border-radius:16px;background:var(--luz-claro);font-size:14.5px}
+.racha-mes .e{font-size:22px}
 
 /* ---------- Vistas ---------- */
 main{padding:6px 18px 0}
@@ -294,6 +301,18 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
 .mov .acciones{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
 .mov .acciones .btn{padding:10px 16px;font-size:15px}
 .mov .nota{margin:8px 0 0;font-size:14px}
+.candado .pie .btn-huella{display:flex;align-items:center;gap:10px;margin:0 auto 4px;flex-basis:auto;background:rgba(246,239,166,.12);color:#F6EFA6;border:1.5px solid rgba(246,239,166,.45);border-radius:999px;padding:11px 22px;font-size:16px;font-weight:600;text-decoration:none;cursor:pointer;min-height:48px}
+.candado .pie .btn-huella + button{flex-basis:100%}
+.candado .pie .btn-huella svg{width:24px;height:24px}
+.candado .pie .btn-huella:focus-visible{outline:3px solid #F6EFA6;outline-offset:2px}
+.mov .en-banco{font-size:14px;margin:2px 0 4px}
+.mov .en-banco b{font-weight:650;letter-spacing:.01em}
+.es-este{margin-top:10px;padding:10px 12px;border-radius:14px;background:var(--luz-claro)}
+.es-este p{margin:0 0 8px;font-size:14px}
+.es-este .opc{display:flex;flex-wrap:wrap;gap:8px}
+.es-este button{border:1.5px solid var(--hoja);background:var(--blanco);color:inherit;border-radius:12px;padding:8px 11px;font:inherit;font-size:14px;text-align:left;cursor:pointer;min-height:44px}
+.es-este button small{display:block;color:var(--gris);font-size:12.5px}
+.nombres .item .t small{white-space:normal}
 
 /* ---------- Inicio ---------- */
 .d-label{font-size:14px;color:rgba(246,239,166,.8);margin-bottom:4px}
@@ -389,6 +408,7 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
         <div class="de" id="d-de">&nbsp;</div>
         <div class="por-dia" id="d-pordia">&nbsp;</div>
         <div class="hoy-lleva" id="d-hoy">&nbsp;</div>
+        <div class="racha" id="d-racha" hidden></div>
       </div>
     </div>
   </header>
@@ -504,6 +524,7 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
 
     <!-- ================= AHORRO ================= -->
     <section class="vista" id="v-ahorro" aria-label="Ahorro">
+      <div class="racha-mes" id="m-racha" hidden></div>
       <h2>Tus metas</h2>
       <div id="m-metas"></div>
       <details class="desplegable" id="m-nueva-box">
@@ -575,10 +596,12 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
 <div class="ajustes oculto" id="ajustes" role="dialog" aria-modal="true" aria-labelledby="aj-titulo">
   <div class="ajustes-in">
     <div class="ajustes-top"><h2 id="aj-titulo">Ajustes</h2><button class="btn btn-sec" id="aj-cerrar" type="button">Cerrar</button></div>
-    <h2 style="font-size:17px">App en tu celular</h2>
-    <div class="lista" id="aj-app"></div>
     <h2 style="font-size:17px">Seguridad</h2>
     <div class="lista" id="aj-seguridad"></div>
+    <h2 style="font-size:17px">Notificaciones en el celular</h2>
+    <div class="lista" id="aj-avisos"></div>
+    <h2 style="font-size:17px">App en tu celular</h2>
+    <div class="lista" id="aj-app"></div>
     <h2 style="font-size:17px">Dinero y periodo</h2>
     <div class="lista" id="aj-dinero"></div>
     <h2 style="font-size:17px">Correos</h2>
@@ -629,7 +652,7 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
 <div class="ajustes oculto" id="correo" role="dialog" aria-modal="true" aria-labelledby="co-titulo">
   <div class="ajustes-in">
     <div class="ajustes-top"><h2 id="co-titulo">Del correo</h2><button class="btn btn-sec" id="co-cerrar" type="button">Cerrar</button></div>
-    <p class="suave peq" style="margin-top:4px">Cada hora reviso tu Gmail buscando compras, pagos y facturas. Lo que reconozco con seguridad lo registro solo; lo demás te espera aquí para que lo confirmes. Nada sale de tu cuenta.</p>
+    <p class="suave peq" style="margin-top:4px">Cada hora reviso tu Gmail buscando compras, pagos y facturas, incluidas las alertas de Bancolombia. Si ya anotaste ese gasto, lo cruzo y no lo repito. Lo que reconozco con seguridad lo registro solo; lo demás te espera aquí. Nada sale de tu cuenta.</p>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <button class="btn btn-primario" id="co-revisar" type="button">Revisar mi correo ahora</button>
       <span class="peq suave" id="co-ultimo"></span>
@@ -639,7 +662,10 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
     <div id="co-pendientes"></div>
     <h2 style="font-size:17px">Lo último que procesé</h2>
     <div class="lista" id="co-recientes"></div>
-    <p class="suave peq" style="margin-top:14px">Las reglas están en la hoja “Reglas correo” de tu Google Sheet. Si al registrar marcas “Recordar para la próxima”, creo una regla y ese tipo de correo ya no te pregunta.</p>
+    <h2 style="font-size:17px">Nombres del banco que ya reconozco</h2>
+    <p class="suave peq" style="margin-top:-4px">El banco no escribe “Rincón Latino” sino el nombre legal o el del dueño. Cuando un correo coincide en valor y fecha con algo que anotaste, aprendo ese nombre y la próxima vez lo anoto solo.</p>
+    <div class="lista nombres" id="co-nombres"></div>
+    <p class="suave peq" style="margin-top:14px">Todo queda en tu Google Sheet: los nombres en la hoja “Nombres del banco” y las reglas de otros remitentes en “Reglas correo”.</p>
   </div>
 </div>
 
@@ -682,6 +708,9 @@ const fCorta = s => { if (!s) return ''; const p = s.split('-').map(Number); ret
 const fLarga = s => { if (!s) return ''; const p = s.split('-').map(Number); return p[2] + ' de ' + MESES[p[1] - 1] + (p[0] !== Number(D.hoy.slice(0, 4)) ? ' de ' + p[0] : ''); };
 const diaSem = s => { const p = s.split('-').map(Number); return DIAS[new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay()]; };
 const plural = (n, a, b) => n + ' ' + (n === 1 ? a : b);
+const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const desB64u = t => { let b = String(t).replace(/-/g, '+').replace(/_/g, '/'); while (b.length % 4) b += '='; return Uint8Array.from(atob(b), c => c.charCodeAt(0)); };
+const ICONO_HUELLA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M7.5 4.6A8.5 8.5 0 0 1 20.5 12"/><path d="M4.1 8.4A8.5 8.5 0 0 0 3.5 12c0 2 .5 3.7 1.4 5.2"/><path d="M8 19.8c-1.5-2.2-2.3-4.7-2.3-7.3a6.3 6.3 0 0 1 12.6 0"/><path d="M12 12.5c0 3.2.9 6.1 2.6 8.4"/><path d="M9.1 12.4a2.9 2.9 0 0 1 5.8 0c0 2.1.4 4.1 1.2 5.9"/><path d="M18.3 15.4c.1 1.3.4 2.5.8 3.7"/><path d="M12 9.6c-1.6 0-2.9 1.3-2.9 2.9 0 2.9.9 5.6 2.6 7.8"/></svg>';
 const listaBonita = arr => arr.length <= 1 ? (arr[0] || '') : arr.slice(0, -1).join(', ') + ' y ' + arr[arr.length - 1];
 
 // La misma pantalla funciona dentro de Apps Script (google.script.run)
@@ -712,12 +741,14 @@ async function api(fn, ...args) {
     const m = errMsg(e);
     if (m === 'BLOQUEADO' && typeof bloquearAhora === 'function' && D) bloquearAhora();
     if (m === 'SIN_VINCULO' && MODO_APP) mostrarSinVinculo();
+    if (m === 'SIN_PIN' && MODO_APP) mostrarSinPin();
     throw e;
   }
 }
 
 function mostrarSinVinculo() {
   try { localStorage.removeItem('eqg_conf'); } catch (e) { }
+  try { if ('caches' in window) caches.delete('eqg-conf'); } catch (e) { }
   CONF = null;
   $('#candado').classList.remove('oculto');
   $('#ca-hoja').innerHTML = hojaSVG(1, 'ok').replace('style="transform:translateY(127px)"', '');
@@ -727,6 +758,17 @@ function mostrarSinVinculo() {
   $('#ca-teclado').classList.add('oculto');
   $('#ca-error').textContent = '';
   $('#ca-pie').innerHTML = '<p class="ayuda">Abre tu app de Apps Script (la de siempre) → Ajustes → <b>App en tu celular</b> → <b>Vincular este celular</b>. Se abrirá esta página ya lista.</p>';
+}
+
+function mostrarSinPin() {
+  $('#candado').classList.remove('oculto');
+  $('#ca-hoja').innerHTML = hojaSVG(1, 'ok').replace('style="transform:translateY(127px)"', '');
+  $('#ca-hola').textContent = 'Hola 🌿';
+  $('#ca-sub').textContent = 'Para usar la app instalada necesitas un PIN.';
+  $('#ca-puntos').innerHTML = '';
+  $('#ca-teclado').classList.add('oculto');
+  $('#ca-error').textContent = '';
+  $('#ca-pie').innerHTML = '<p class="ayuda">Abre tu app de siempre (la de Apps Script) → Ajustes → <b>Seguridad</b> → <b>Crear PIN</b>. Después vuelve aquí.</p><button type="button" onclick="location.reload()">Ya lo creé</button>';
 }
 
 // Lee el enlace de vinculación (#vincular=…) y guarda la llave solo en este celular
@@ -824,6 +866,33 @@ function pintarHoja(pct, est) {
   const aplicar = () => { r.style.transform = `translateY(${r.dataset.desp}px)`; };
   if (!hojaAnimada) { hojaAnimada = true; requestAnimationFrame(() => requestAnimationFrame(aplicar)); } else { r.style.transition = 'none'; aplicar(); }
 }
+// Racha: días seguidos sin pasarte de lo que puedes gastar en el día (se cierra cada noche con el recordatorio)
+function pintarRacha(P) {
+  const box = $('#d-racha');
+  const R = D.racha;
+  if (!R || !(P.porDia > 0)) { box.hidden = true; return; }
+  const planta = n => n >= 7 ? '🌳' : n >= 3 ? '🌿' : '🌱';
+  const dias = n => plural(n, 'día', 'días');
+  const queda = P.porDia - D.hoyTotal; // cuenta todo, también lo de crédito
+  const hora = (R.hora > 12 ? R.hora - 12 : R.hora) + (R.hora >= 12 ? '\u00a0p.\u00a0m.' : '\u00a0a.\u00a0m.');
+  const conCredito = D.hoyTotal > P.hoyCaja;
+  let e = planta(R.dias), t = '', mal = false;
+  if (R.cerradoHoy) {
+    if (R.dias > 0) t = `<b>Racha de ${dias(R.dias)}</b>${R.dias > 1 && R.dias >= R.mejor ? ', tu mejor hasta hoy' : ''}. Mañana va por el ${R.dias + 1}.`;
+    else { e = '🍂'; mal = true; t = '<b>Hoy te pasaste del cupo.</b> Mañana empieza una racha nueva.'; }
+  } else if (queda < 0) {
+    e = '🍂'; mal = true;
+    t = `<b>${conCredito ? 'Contando lo de crédito, hoy vas' : 'Hoy vas'} ${money(-queda)} por encima.</b> ${R.dias ? `Tu racha de ${dias(R.dias)} se corta esta noche.` : 'Mañana empiezas una racha nueva.'}`;
+  } else if (R.dias > 0) {
+    t = `<b>Racha de ${dias(R.dias)}.</b> Si hoy no pasas de ${money(P.porDia)}${conCredito ? ' (contando lo de crédito)' : ''}, a las ${hora} llegas a ${R.dias + 1}.`;
+  } else {
+    t = `<b>Empieza tu racha:</b> si hoy no pasas de ${money(P.porDia)}${conCredito ? ' (contando lo de crédito)' : ''}, a las ${hora} cuenta tu primer día.`;
+  }
+  box.className = 'racha' + (mal ? ' mal' : '');
+  box.innerHTML = `<span class="e" aria-hidden="true">${e}</span><span>${t}</span>`;
+  box.hidden = false;
+}
+
 function renderDosel() {
   const P = D.plata;
   if (P && P.configurado) {
@@ -842,7 +911,9 @@ function renderDosel() {
       $('#d-de').textContent = P.hoyCaja ? `de ${money(P.porDia)} que tienes para cada día` : (P.reservar > 0 ? 'para que esta quincena y la próxima te rindan igual' : 'para que te alcance hasta tu próximo pago');
       pd.className = 'por-dia'; pd.textContent = P.proximo ? `Para el día a día te quedan ${money(P.disponible)} hasta tu pago del ${fCorta(P.proximo)}` : `Para el día a día te quedan ${money(P.disponible)}`;
     }
-    $('#d-hoy').textContent = P.hoyCaja ? `Hoy llevas ${money(P.hoyCaja)}` : 'Hoy no has anotado gastos';
+    $('#d-hoy').textContent = P.hoyCaja ? `Hoy llevas ${money(P.hoyCaja)}${D.hoyTotal > P.hoyCaja ? ` de tu cuenta y ${money(D.hoyTotal - P.hoyCaja)} con crédito` : ''}`
+      : D.hoyN ? `Hoy anotaste ${money(D.hoyTotal)} con crédito: no sale de tu cuenta hoy` : 'Hoy no has anotado gastos';
+    pintarRacha(P);
     return;
   }
   const p = D.periodo;
@@ -893,6 +964,8 @@ function abrirCandado(modo, opciones) {
   $('#ca-error').textContent = '';
   $('#ca-teclado').classList.remove('oculto');
   const pie = [];
+  CA.huella = modo === 'entrar' && !!o.huella && MODO_APP && !!window.PublicKeyCredential;
+  if (CA.huella) { $('#ca-sub').textContent = 'Usa tu huella o escribe tu PIN'; pie.push(`<button type="button" class="btn-huella" id="ca-huella">${ICONO_HUELLA}Entrar con huella</button>`); }
   if (modo === 'entrar') pie.push('<button type="button" id="ca-olvide">Olvidé mi PIN</button>');
   if (CA.intento !== 'entrar') pie.push(`<button type="button" id="ca-cancelar">${CA.opcional ? 'Ahora no' : 'Cancelar'}</button>`);
   $('#ca-pie').innerHTML = pie.join('');
@@ -900,9 +973,48 @@ function abrirCandado(modo, opciones) {
     $('#ca-pie').innerHTML = '<p class="ayuda">Desde el computador abre tu proyecto en Apps Script, elige la función <b>borrarPin</b> y dale Ejecutar. Luego abre la app y crea uno nuevo en Ajustes.</p>';
   };
   if ($('#ca-cancelar')) $('#ca-cancelar').onclick = () => { if (CA.opcional) { try { localStorage.setItem('eqg_pin_omitido', '1'); } catch (e) { } } cerrarCandado(); };
+  if ($('#ca-huella')) $('#ca-huella').onclick = intentarHuella;
   pintarPuntos();
   $('#candado').classList.remove('oculto');
   document.body.style.overflow = 'hidden';
+  if (CA.huella && o.autoHuella !== false) setTimeout(intentarHuella, 250);
+}
+
+// Entrar con la huella del celular (WebAuthn). Si cancelas, queda el teclado del PIN.
+async function intentarHuella() {
+  if (CA.ocupado || CA.modo !== 'entrar') return;
+  CA.ocupado = true;
+  $('#ca-error').textContent = '';
+  const sub = $('#ca-sub');
+  try {
+    const reto = await api('retoHuella', 'entrar');
+    if (!reto.id) throw new Error('SIN_HUELLA');
+    const cred = await navigator.credentials.get({ publicKey: {
+      challenge: desB64u(reto.reto), rpId: location.hostname, userVerification: 'required', timeout: 60000,
+      allowCredentials: [{ type: 'public-key', id: desB64u(reto.id), transports: ['internal'] }] } });
+    sub.textContent = 'Un momento…';
+    const r = await api('entrarConHuella', { id: b64u(cred.rawId), clientData: b64u(cred.response.clientDataJSON),
+      authData: b64u(cred.response.authenticatorData), firma: b64u(cred.response.signature) });
+    S.token = r.token; D = r.data; render(); cerrarCandado(); despuesDeEntrar();
+  } catch (e) {
+    sub.textContent = 'Usa tu huella o escribe tu PIN';
+    const m = errMsg(e);
+    if (m === 'SIN_HUELLA') { $('#ca-huella') && $('#ca-huella').remove(); sub.textContent = textosCandado.entrar()[0]; $('#ca-error').textContent = 'La huella ya no está activa en este celular. Entra con tu PIN.'; }
+    else if (e && (e.name === 'NotAllowedError' || e.name === 'AbortError')) { /* la cancelaste: sigue el PIN */ }
+    else if (m !== 'BLOQUEADO') $('#ca-error').textContent = m;
+  } finally { CA.ocupado = false; }
+}
+
+// Después de entrar: ir a donde llevaba la notificación y mantener la suscripción al día
+function despuesDeEntrar() {
+  if (S.irPendiente) { const v = S.irPendiente; S.irPendiente = ''; setTimeout(() => irDesdeAviso(v), 50); }
+  revisarSuscripcion();
+}
+function irDesdeAviso(v) {
+  if (!v) return;
+  if (!D || !$('#candado').classList.contains('oculto')) { S.irPendiente = v; return; }
+  if (v === 'correo') abrirCorreo();
+  else irA(['inicio', 'anotar', 'cupos', 'hormiga', 'ahorro', 'promos'].includes(v) ? v : 'inicio');
 }
 function cerrarCandado() { $('#candado').classList.add('oculto'); document.body.style.overflow = ''; CA.pin = ''; CA.actual = ''; CA.nuevo = ''; }
 function pintarPuntos() {
@@ -936,7 +1048,7 @@ async function avanzarCandado() {
   try {
     if (CA.modo === 'entrar') {
       const r = await conCarga('desbloquear', [pin]);
-      S.token = r.token; D = r.data; render(); cerrarCandado();
+      S.token = r.token; D = r.data; render(); cerrarCandado(); despuesDeEntrar();
       return;
     }
     if (CA.modo === 'actual') {
@@ -964,7 +1076,7 @@ function bloquearAhora() {
   if (!D || !D.tienePin) return;
   S.token = '';
   if (!$('#ajustes').classList.contains('oculto')) cerrarAjustes();
-  abrirCandado('entrar', { nombre: D.nombre, ahora: D.ahora });
+  abrirCandado('entrar', { nombre: D.nombre, ahora: D.ahora, huella: D.huella });
 }
 function pintarAppInstalable() {
   const box = $('#aj-app');
@@ -978,7 +1090,8 @@ function pintarAppInstalable() {
   box.innerHTML = `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Instálala como app</b><small>Para tener el ícono de la hoja y abrirla a pantalla completa, sin el aviso de Google. Sigue la guía que te pasé y pega aquí las dos direcciones.</small></div></div>
     <div style="padding:6px 0 4px"><label class="lbl" for="aj-app-url" style="margin-top:4px">Dirección de tu app (GitHub Pages)</label><input id="aj-app-url" type="url" placeholder="https://tuusuario.github.io/enquegasto/" value="${esc(a.appUrl || '')}"></div>
     <div style="padding:2px 0 4px"><label class="lbl" for="aj-api-url">Dirección pública de tu Apps Script</label><input id="aj-api-url" type="url" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(a.apiUrl || '')}"></div>
-    <div class="mini-acciones" style="padding:6px 0 14px"><button class="btn btn-primario" type="button" id="aj-vincular" style="padding:10px 16px;font-size:15px">Vincular este celular</button>
+    ${D.tienePin ? '' : '<p class="peq" style="color:var(--dorado-txt);margin:4px 0 0">Primero crea tu PIN (arriba, en Seguridad). La app instalada solo funciona con PIN.</p>'}
+    <div class="mini-acciones" style="padding:6px 0 14px"><button class="btn btn-primario" type="button" id="aj-vincular" style="padding:10px 16px;font-size:15px" ${D.tienePin ? '' : 'disabled'}>Vincular este celular</button>
       ${a.celulares ? `<button class="btn-mini" type="button" id="aj-desvincular">Desvincular todos (${a.celulares})</button>` : ''}</div>
     <div id="aj-vinculo"></div>`;
   $('#aj-vincular').onclick = async e => {
@@ -998,14 +1111,116 @@ function pintarAppInstalable() {
 function pintarSeguridad() {
   const box = $('#aj-seguridad');
   box.innerHTML = D.tienePin
-    ? `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Tu app tiene PIN 🔒</b><small>Te lo pido al abrirla y cuando vuelves después de 2 minutos fuera de la app.</small></div></div>
-       <div class="mini-acciones" style="padding:4px 0 14px"><button class="btn-mini" type="button" id="aj-bloquear">Bloquear ahora</button><button class="btn-mini" type="button" id="aj-cambiar-pin">Cambiar PIN</button><button class="btn-mini" type="button" id="aj-quitar-pin">Quitar PIN</button></div>`
+    ? `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Tu app tiene PIN 🔒</b><small>Te lo pido al abrirla, cuando vuelves después de 2 minutos fuera de la app y tras 30 minutos sin usarla. Si alguien lo falla 5 veces, te llega un correo.</small></div></div>
+       <div class="mini-acciones" style="padding:4px 0 14px"><button class="btn-mini" type="button" id="aj-bloquear">Bloquear ahora</button><button class="btn-mini" type="button" id="aj-cambiar-pin">Cambiar PIN</button>${MODO_APP ? '' : '<button class="btn-mini" type="button" id="aj-quitar-pin">Quitar PIN</button>'}</div>
+       ${!MODO_APP && D.appInstalable && D.appInstalable.celulares ? '<p class="peq suave" style="margin:0 0 12px">Si quitas el PIN, la app instalada en tu celular deja de funcionar hasta que crees otro.</p>' : ''}`
     : `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Sin PIN</b><small>Cualquiera que tenga tu celular desbloqueado puede abrir la app.</small></div></div>
        <div class="mini-acciones" style="padding:4px 0 14px"><button class="btn btn-primario" type="button" id="aj-crear-pin" style="padding:10px 16px;font-size:15px">Crear PIN</button></div>`;
   if ($('#aj-crear-pin')) $('#aj-crear-pin').onclick = () => abrirCandado('crear', { intento: 'crear', nombre: D.nombre, ahora: D.ahora });
   if ($('#aj-cambiar-pin')) $('#aj-cambiar-pin').onclick = () => abrirCandado('actual', { intento: 'cambiar', nombre: D.nombre, ahora: D.ahora });
   if ($('#aj-quitar-pin')) $('#aj-quitar-pin').onclick = () => abrirCandado('actual', { intento: 'quitar', nombre: D.nombre, ahora: D.ahora });
   if ($('#aj-bloquear')) $('#aj-bloquear').onclick = bloquearAhora;
+  if (MODO_APP && D.tienePin) pintarHuella(box);
+}
+
+async function pintarHuella(box) {
+  const fila = document.createElement('div');
+  box.appendChild(fila);
+  let disponible = false;
+  try { disponible = !!window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); } catch (e) { disponible = false; }
+  if (!disponible) {
+    fila.innerHTML = `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Entrar con huella</b><small>Este celular no tiene huella ni bloqueo de pantalla configurado, o el navegador no lo permite.</small></div></div>`;
+    return;
+  }
+  fila.innerHTML = D.huella
+    ? `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Entras con tu huella 🌿</b><small>Al abrir la app te pido la huella. Si falla o la cancelas, usas tu PIN. Cualquier huella registrada en este celular abre la app.</small></div></div>
+       <div class="mini-acciones" style="padding:4px 0 14px"><button class="btn-mini" type="button" id="aj-quitar-huella">Quitar huella</button></div>`
+    : `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Entrar con huella</b><small>En vez de escribir el PIN, pones el dedo. Tu huella no sale del celular: el teléfono solo confirma que eres tú.</small></div></div>
+       <div class="mini-acciones" style="padding:4px 0 14px"><button class="btn btn-primario" type="button" id="aj-activar-huella" style="padding:10px 16px;font-size:15px">${ICONO_HUELLA.replace('<svg', '<svg style="width:20px;height:20px;vertical-align:-4px;margin-right:6px"')}Activar huella</button></div>`;
+  if ($('#aj-quitar-huella')) $('#aj-quitar-huella').onclick = e => dosToques(e.currentTarget, () => llamar('quitarHuella', [], 'Huella quitada: entrarás con tu PIN', e.currentTarget).then(() => pintarSeguridad()).catch(() => {}));
+  if ($('#aj-activar-huella')) $('#aj-activar-huella').onclick = async e => {
+    const b = e.currentTarget; const txt = b.innerHTML; b.disabled = true; b.textContent = 'Pon tu dedo…';
+    try {
+      const reto = await api('retoHuella', 'registro');
+      const cred = await navigator.credentials.create({ publicKey: {
+        challenge: desB64u(reto.reto), rp: { name: '¿En qué gasto?', id: location.hostname },
+        user: { id: crypto.getRandomValues(new Uint8Array(16)), name: reto.nombre, displayName: reto.nombre },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }], attestation: 'none', timeout: 60000,
+        authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' } } });
+      const resp = cred.response;
+      if (!resp.getPublicKey || !resp.getAuthenticatorData) throw new Error('Actualiza Chrome para poder usar la huella.');
+      D = await api('registrarHuella', { id: b64u(cred.rawId), clientData: b64u(resp.clientDataJSON), authData: b64u(resp.getAuthenticatorData()),
+        clave: b64u(resp.getPublicKey()), alg: resp.getPublicKeyAlgorithm() });
+      render(); pintarSeguridad(); toast('Listo: desde ahora entras con tu huella');
+    } catch (err) {
+      b.disabled = false; b.innerHTML = txt;
+      if (err && (err.name === 'NotAllowedError' || err.name === 'AbortError')) toast('No se activó: cancelaste o se acabó el tiempo.', true);
+      else toast(errMsg(err), true);
+    }
+  };
+}
+
+/* ---------- Notificaciones en el celular ---------- */
+function puedeAvisar() { return MODO_APP && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window; }
+async function guardarConfSW(desde) {
+  if (!MODO_APP || !('caches' in window) || !CONF) return;
+  try {
+    const c = await caches.open('eqg-conf');
+    await c.put('conf', new Response(JSON.stringify({ a: CONF.a, k: CONF.k })));
+    if (desde) await c.put('desde', new Response(String(desde)));
+  } catch (e) { }
+}
+async function suscripcionLocal() {
+  try { const reg = await navigator.serviceWorker.ready; return await reg.pushManager.getSubscription(); } catch (e) { return null; }
+}
+// Si el celular tiene la suscripción pero tu Apps Script la perdió (o cambió), se vuelve a guardar sola
+async function revisarSuscripcion() {
+  if (!puedeAvisar() || Notification.permission !== 'granted' || !D || D.avisosCelular) return;
+  const sub = await suscripcionLocal();
+  if (!sub) return;
+  try { await guardarConfSW(); D = await api('guardarSuscripcion', sub.toJSON()); render(); } catch (e) { }
+}
+async function pintarAvisos() {
+  const box = $('#aj-avisos');
+  if (!MODO_APP) { box.innerHTML = `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Se activan desde el celular</b><small>Abre la app instalada en tu celular → Ajustes → Notificaciones en el celular.</small></div></div>`; return; }
+  if (!puedeAvisar()) { box.innerHTML = `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>No disponibles aquí</b><small>Abre la app instalada (el ícono de la hoja), no la página en el navegador.</small></div></div>`; return; }
+  if (Notification.permission === 'denied') {
+    box.innerHTML = `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Están bloqueadas</b><small>Las bloqueaste para esta app. Actívalas en los ajustes del celular → Apps → ¿En qué gasto? → Notificaciones, y vuelve aquí.</small></div></div>`;
+    return;
+  }
+  const sub = await suscripcionLocal();
+  const activas = !!sub && Notification.permission === 'granted' && D.avisosCelular;
+  box.innerHTML = activas
+    ? `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Activas en este celular 🔔</b><small>Te aviso de sobrecupos, de lo que anoto solo desde tu banco, de lo que queda por revisar, de los pagos de mañana, el recordatorio de la noche y avisos de seguridad.</small></div></div>
+       <div class="mini-acciones" style="padding:4px 0 14px"><button class="btn-mini" type="button" id="av-probar">Enviar una de prueba</button><button class="btn-mini" type="button" id="av-quitar">Desactivar</button></div>`
+    : `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Avisos en tu celular</b><small>Sobrecupos, gastos que anoto solo desde tu banco, lo que queda por revisar, pagos de mañana y avisos de seguridad. El texto viaja directo de tu Apps Script a tu celular.</small></div></div>
+       <div class="mini-acciones" style="padding:4px 0 14px"><button class="btn btn-primario" type="button" id="av-activar" style="padding:10px 16px;font-size:15px">Activar notificaciones</button></div>`;
+  if ($('#av-probar')) $('#av-probar').onclick = e => llamar('probarAviso', [], 'Te mandé una. Debe llegar en unos segundos.', e.currentTarget).catch(() => {});
+  if ($('#av-quitar')) $('#av-quitar').onclick = async e => {
+    const b = e.currentTarget; b.disabled = true;
+    try { const s2 = await suscripcionLocal(); if (s2) await s2.unsubscribe(); D = await api('quitarSuscripcion'); render(); pintarAvisos(); toast('Notificaciones desactivadas en este celular'); }
+    catch (err) { toast(errMsg(err), true); b.disabled = false; }
+  };
+  if ($('#av-activar')) $('#av-activar').onclick = async e => {
+    const b = e.currentTarget; b.disabled = true; b.textContent = 'Activando…';
+    try {
+      const permiso = await Notification.requestPermission();
+      if (permiso !== 'granted') throw new Error('Sin tu permiso no puedo mandarte notificaciones.');
+      const reg = await navigator.serviceWorker.ready;
+      const { clave } = await api('clavePush');
+      let s2 = await reg.pushManager.getSubscription();
+      if (s2 && s2.options && s2.options.applicationServerKey && b64u(s2.options.applicationServerKey) !== clave) { await s2.unsubscribe(); s2 = null; }
+      if (!s2) s2 = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: desB64u(clave) });
+      await guardarConfSW(Date.now() - 5000);
+      D = await api('guardarSuscripcion', s2.toJSON());
+      render(); await pintarAvisos(); toast('Listo: notificaciones activadas 🔔');
+    } catch (err) {
+      b.disabled = false; b.textContent = 'Activar notificaciones';
+      const m = errMsg(err);
+      toast(/^[A-Z].*(failed|error|denied|abort)/i.test(m) && !/[áéíóúñ]/.test(m) ? 'Chrome no pudo activar las notificaciones en este celular. Revisa tu internet e intenta otra vez.' : m, true);
+      if (Notification.permission === 'denied') pintarAvisos();
+    }
+  };
 }
 
 /* ============================================================
@@ -1278,7 +1493,7 @@ async function guardarGasto(ev) {
     const cat = g.categoria; S.cat = ''; S.hormigaManual = null;
     render();
     mostrarResultado(r, cat);
-    toast('Gasto guardado');
+    toast(r.cruce || 'Gasto guardado');
   } catch (e) { toast(errMsg(e), true); }
   finally { btn.disabled = false; btn.textContent = 'Guardar gasto'; }
 }
@@ -1511,9 +1726,20 @@ function renderFijos() {
   const ds = D.planes.deudas;
   const sinSaldo = D.fijos.filter(x => x.vigente && x.tipo === 'Deuda' && (x.saldo === null || !(x.monto > 0)));
   const pagadas = D.fijos.filter(x => x.pagada);
-  $('#f-deudas').innerHTML = (ds.map((d, i) => `<div class="deuda"><div class="fila"><b>${esc(d.emoji)} ${esc(d.concepto)}</b><span class="num" style="font-weight:650">${money(d.saldo)}</span></div>
-      <div class="prox">Cuota de ${money(d.cuota)}. Terminas en ${esc(d.finEstimado)} (${plural(d.meses, 'mes', 'meses')}, aprox. sin intereses).</div>
-      ${i === 0 && d.mesesConExtra && d.mesesConExtra < d.meses ? `<div class="bola">❄️ Es la más pequeña: si le abonas lo que recortes en hormiga (${money(D.planes.extraDeuda)} al mes), la liquidas en ${plural(d.mesesConExtra, 'mes', 'meses')} y liberas ${money(d.cuota)} mensuales para la siguiente.</div>` : ''}</div>`).join('')
+  const tasaTxt = t => String(t).replace('.', ',') + '% E.A.';
+  $('#f-deudas').innerHTML = (ds.map((d, i) => {
+    const tags = [];
+    if (d.masCara) tags.push('<span class="tag sube">La más cara</span>');
+    if (d.masPequena) tags.push('<span class="tag baja">La más pequeña</span>');
+    if (d.tasa) tags.push(`<span class="tag">${tasaTxt(d.tasa)}</span>`);
+    const fin = d.meses ? `Terminas en ${esc(d.finEstimado)} (${d.cuotas ? `te faltan ${plural(d.meses, 'cuota', 'cuotas')}` : plural(d.meses, 'mes', 'meses')}${d.tasa || d.cuotas ? '' : ', aprox. sin intereses'}).` : `<span style="color:var(--otono)">Con esta cuota no alcanzas a bajar el capital.</span>`;
+    return `<div class="deuda"><div class="fila"><b>${esc(d.emoji)} ${esc(d.concepto)}</b><span class="num" style="font-weight:650">${money(d.saldo)}</span></div>
+      ${tags.length ? `<div class="tags" style="margin:6px 0 0">${tags.join('')}</div>` : ''}
+      <div class="prox">Cuota de ${money(d.cuota)}${d.interesMes ? `, de la que unos <b>${money(d.interesMes)}</b> son intereses` : ''}. ${fin}</div>
+      ${!d.tasa ? '<div class="prox" style="color:var(--dorado-txt)">Agrega la tasa E.A. en el editor para calcular los intereses.</div>' : ''}
+      ${i === 0 && d.mesesConExtra && d.meses && d.mesesConExtra < d.meses ? `<div class="bola">❄️ Si le abonas lo que recortes en hormiga (${money(D.planes.extraDeuda)} al mes), la liquidas en ${plural(d.mesesConExtra, 'mes', 'meses')} y liberas ${money(d.cuota)} mensuales${ds.length > 1 ? ' para la siguiente' : ''}.</div>` : ''}
+      ${d.masCara && d.interesMes ? `<div class="bola" style="background:var(--otono-claro)">💸 Cada $100.000 que le abones a capital te ahorra unos ${money(100000 * (Math.pow(1 + d.tasa / 100, 1 / 12) - 1))} de intereses al mes.</div>` : ''}</div>`;
+  }).join('')
     + sinSaldo.map(d => `<div class="deuda"><div class="fila"><b>${esc(d.emoji)} ${esc(d.concepto)}</b><span class="suave peq">sin datos</span></div><div class="prox">Escribe la cuota y el saldo en el editor de abajo para calcular cuándo terminas.</div></div>`).join('')
     + pagadas.map(d => `<div class="deuda"><div class="fila"><b>${esc(d.emoji)} ${esc(d.concepto)}</b><span style="color:var(--hoja);font-weight:650">Pagada 🎉</span></div></div>`).join(''))
     || '<p class="vacio">No tienes deudas registradas.</p>';
@@ -1529,6 +1755,7 @@ function pintarEditorFijos() {
       <div><label>Tipo</label><select data-k="tipo">${tipos.map(t => `<option ${t === x.tipo ? 'selected' : ''}>${t}</option>`).join('')}</select></div></div>
     <div class="ed-fechas"><div><label>Desde</label><input data-k="desde" type="date" value="${x.desde || ''}"></div><div><label>Hasta</label><input data-k="hasta" type="date" value="${x.hasta || ''}"></div></div>
     <div class="ed-grid-2"><div><label>Saldo deuda</label><input data-k="saldo" class="num fmt" inputmode="numeric" value="${x.saldo === null || x.saldo === undefined ? '' : fmtNum(x.saldo) || '0'}" placeholder="${x.tipo === 'Deuda' ? '¿Cuánto debes?' : 'Solo deudas'}"></div><div><label>Último pago</label><input data-k="ultimoPago" type="date" value="${x.ultimoPago || ''}"></div></div>
+    <div class="ed-grid-2"><div><label>Tasa E.A. %</label><input data-k="tasa" inputmode="decimal" value="${x.tasa ? String(x.tasa).replace('.', ',') : ''}" placeholder="${x.tipo === 'Deuda' ? 'Ej.: 24,26' : 'Solo deudas'}"></div><div><label>Cuotas que faltan</label><input data-k="cuotas" inputmode="numeric" value="${x.cuotas || ''}" placeholder="${x.tipo === 'Deuda' ? 'Si el banco lo dice' : 'Solo deudas'}"></div></div>
     <div class="ed-acciones"><label><input type="checkbox" data-k="activo" ${x.activo !== false ? 'checked' : ''}> Activo</label><button class="btn-mini" type="button" data-quitar="${i}">Quitar</button></div></div>`).join('');
   $$('#f-editor [data-k]').forEach(inp => inp.addEventListener('input', () => {
     const i = inp.closest('.ed-fila').dataset.i, k = inp.dataset.k;
@@ -1544,6 +1771,12 @@ function pintarEditorFijos() {
  *  AHORRO
  * ============================================================ */
 function renderAhorro() {
+  const RM = D.racha || {};
+  const rm = $('#m-racha');
+  if (RM.meses > 0) {
+    rm.innerHTML = `<span class="e" aria-hidden="true">🏆</span><div><b>${plural(RM.meses, 'mes seguido', 'meses seguidos')} cumpliendo tu plan de ahorro</b><br><small class="suave">Cuenta cuando cierras el mes abonando lo que le tocaba a una meta, con menos gastos hormiga o sin pasarte de tus cupos.</small></div>`;
+    rm.hidden = false;
+  } else rm.hidden = true;
   const planes = D.planes.planes;
   const nombrePlan = id => (planes.find(p => p.id === id) || {}).nombre || '';
   $('#m-metas').innerHTML = D.metas.length ? D.metas.map(m => {
@@ -1631,6 +1864,9 @@ function pintarGmail() {
 const ICONO_MOV = { 'Gasto': '🧾', 'Compra a cuotas': '🛍️', 'Pago de fijo': '✅', 'Factura': '📄', 'Ignorar': '🚫' };
 const BOTON_MOV = { 'Gasto': 'Registrar gasto', 'Compra a cuotas': 'Registrar compra', 'Pago de fijo': 'Marcar pagado', 'Factura': 'Actualizar valor', 'Ignorar': 'Ignorar' };
 const nombreRem = r => String(r || '').split('<')[0].trim() || r;
+const BANCOS_UI = [['bancolombia', 'Bancolombia'], ['davivienda', 'Davivienda'], ['bancodebogota', 'Banco de Bogotá'], ['bbva', 'BBVA'], ['nequi', 'Nequi'],
+  ['daviplata', 'Daviplata'], ['scotiabank', 'Scotiabank Colpatria'], ['avvillas', 'AV Villas'], ['nubank', 'Nu'], ['lulo', 'Lulo Bank'], ['falabella', 'Banco Falabella']];
+const nombreBanco = r => (BANCOS_UI.find(([k]) => String(r || '').toLowerCase().includes(k)) || [0, nombreRem(r)])[1];
 const movCompleto = i => i.monto > 0 && !i.nota && ((i.tipo === 'Gasto' || i.tipo === 'Compra a cuotas') ? !!i.categoria : !!i.fijoId);
 
 function renderAvisoCorreo() {
@@ -1665,15 +1901,16 @@ function pintarBandeja() {
   const cats = D.cuposConfig.filter(c => c.activo);
   const fijos = D.fijos.filter(f => f.activo !== false);
   $('#co-pendientes').innerHTML = b.pendientes.length ? b.pendientes.map(i => `<div class="mov" data-id="${esc(i.id)}">
-      <div class="mov-top"><b>${ICONO_MOV[i.tipo] || '•'} ${esc(nombreRem(i.remitente))}</b><span class="peq suave">${fCorta(i.fecha)}</span></div>
-      <div class="asunto" title="${esc(i.asunto)}">${esc(i.asunto)}</div>
+      <div class="mov-top"><b>${i.banco ? '🏦' : ICONO_MOV[i.tipo] || '•'} ${esc(i.banco ? nombreBanco(i.remitente) : nombreRem(i.remitente))}</b><span class="peq suave">${fCorta(i.fecha)}</span></div>
+      ${i.banco ? `<div class="en-banco">En el banco aparece como <b>${esc(i.banco)}</b></div>` : `<div class="asunto" title="${esc(i.asunto)}">${esc(i.asunto)}</div>`}
       ${i.nota ? `<div class="nota aviso"><span class="i">⚠️</span><div>${esc(i.nota)}</div></div>` : ''}
+      ${(i.cercanos || []).length ? `<div class="es-este"><p><b>¿Ya lo anotaste?</b> Toca el gasto que es. Si el valor cambió (por ejemplo, la propina), lo ajusto a ${money(i.monto)}.</p><div class="opc">${i.cercanos.map(g => `<button type="button" data-unir="${esc(g.id)}">${esc(g.lugar || g.categoria)} · ${money(g.monto)}<small>${esc(g.categoria)}, ${fCorta(g.fecha)}</small></button>`).join('')}</div></div>` : ''}
       <div class="ed-grid-2"><div><label class="l">Qué es</label><select data-f="tipo">${D.tiposMov.map(t => `<option ${t === i.tipo ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
         <div><label class="l">Monto</label><input data-f="monto" class="num fmt" inputmode="numeric" value="${fmtNum(i.monto)}"></div></div>
       <div class="ed-grid-2 f-gasto"><div><label class="l">Lugar</label><input data-f="lugar" value="${esc(i.lugar)}" list="dl-lugares"></div>
         <div><label class="l">Categoría</label><select data-f="categoria"><option value="">Elige…</option>${cats.map(c => `<option value="${esc(c.categoria)}" ${c.categoria === i.categoria ? 'selected' : ''}>${esc(c.emoji)} ${esc(c.categoria)}</option>`).join('')}</select></div></div>
       <div class="f-fijo"><label class="l">Pago fijo</label><select data-f="fijoId"><option value="">Elige…</option>${fijos.map(f => `<option value="${esc(f.id)}" ${f.id === i.fijoId ? 'selected' : ''}>${esc(f.emoji)} ${esc(f.concepto)}</option>`).join('')}</select></div>
-      <label class="recordar"><input type="checkbox" data-f="recordar"> Recordar para la próxima con este remitente</label>
+      <label class="recordar"><input type="checkbox" data-f="recordar" ${i.banco ? 'checked' : ''}> ${i.banco ? `Recordar: cuando el banco diga “${esc(i.banco)}”, es esto` : 'Recordar para la próxima con este remitente'}</label>
       <div class="acciones"><button class="btn btn-primario" type="button" data-aprobar>${BOTON_MOV[i.tipo] || 'Registrar'}</button><button class="btn btn-sec" type="button" data-ignorar>Ignorar</button>${i.link ? `<a class="btn-mini" href="${esc(i.link)}" target="_blank" rel="noopener">Ver correo</a>` : ''}</div>
     </div>`).join('') : `<p class="vacio">${D.config.LEER_CORREOS ? 'Nada pendiente. Lo nuevo que llegue a tu correo aparecerá aquí.' : 'Activa “Leer compras y pagos del correo” en Ajustes.'}</p>`;
   $$('#co-pendientes .mov').forEach(card => {
@@ -1698,11 +1935,27 @@ function pintarBandeja() {
       llamar('aprobarMovimiento', [id, c, recordar()], c.tipo === 'Pago de fijo' ? 'Pago marcado' : c.tipo === 'Factura' ? 'Valor actualizado' : 'Gasto registrado', e.currentTarget).catch(() => {});
     };
     $('[data-ignorar]', card).onclick = e => llamar('ignorarMovimiento', [id, recordar()], 'Ignorado', e.currentTarget).catch(() => {});
+    $$('[data-unir]', card).forEach(btn => btn.onclick = () => llamar('unirMovimiento', [id, btn.dataset.unir], 'Listo, quedó unido a tu gasto', btn).catch(() => {}));
   });
-  $('#co-recientes').innerHTML = b.recientes.length ? b.recientes.map(i => `<div class="item"><span class="e">${ICONO_MOV[i.tipo] || '•'}</span>
-      <div class="t"><b>${esc(i.tipo === 'Gasto' || i.tipo === 'Compra a cuotas' ? (i.lugar || nombreRem(i.remitente)) : nombreRem(i.remitente))}</b><small>${esc(i.estado)}${i.nota ? ': ' + esc(i.nota) : ''}</small></div>
-      <div class="der"><span class="monto num">${i.monto ? money(i.monto) : ''}</span>${i.link ? `<a class="btn-mini" href="${esc(i.link)}" target="_blank" rel="noopener">Ver</a>` : ''}</div></div>`).join('')
-    : '<p class="vacio">Todavía nada.</p>';
+  const ESTADO_MOV = { 'Cruzado': 'Ya estaba anotado', 'Unido': 'Unido con lo que anotaste', 'Automático': 'Lo anoté solo', 'Registrado': 'Registrado', 'Ignorado': 'Ignorado' };
+  $('#co-recientes').innerHTML = b.recientes.length ? b.recientes.map(i => {
+    const enlazado = i.estado === 'Cruzado' || i.estado === 'Unido';
+    const esGasto = i.tipo === 'Gasto' || i.tipo === 'Compra a cuotas';
+    const titulo = esGasto && i.estado !== 'Ignorado' ? (i.lugar || i.banco || nombreRem(i.remitente)) : (i.banco || nombreRem(i.remitente));
+    const otroNombre = i.banco && norm(i.banco) !== norm(titulo) ? `En el banco: ${i.banco}` : '';
+    const detalle = [i.nota && !enlazado ? i.nota : '', otroNombre].filter(Boolean).join(' ');
+    return `<div class="item"><span class="e">${enlazado ? '🔗' : ICONO_MOV[i.tipo] || '•'}</span>
+      <div class="t"><b>${esc(titulo)}</b><small>${esc(ESTADO_MOV[i.estado] || i.estado)}${detalle ? '. ' + esc(detalle) : ''}</small></div>
+      <div class="der"><span class="monto num">${i.monto ? money(i.monto) : ''}</span>${i.estado === 'Cruzado' ? `<button class="btn-mini" type="button" data-separar="${esc(i.id)}">No era eso</button>` : i.link ? `<a class="btn-mini" href="${esc(i.link)}" target="_blank" rel="noopener">Ver</a>` : ''}</div></div>`;
+  }).join('') : '<p class="vacio">Todavía nada.</p>';
+  $$('#co-recientes [data-separar]').forEach(btn => btn.onclick = () => llamar('separarMovimiento', [btn.dataset.separar], 'Lo devolví a “Por revisar”', btn).catch(() => {}));
+  const nombres = b.nombres || [];
+  $('#co-nombres').innerHTML = nombres.length ? nombres.map(x => {
+    const que = x.que === 'Ignorar' ? 'No es gasto: lo ignoro' : x.que === 'Pago de fijo' || x.que === 'Factura' ? `Pago de ${x.fijo || 'un fijo'}` : `${x.lugar || 'Sin lugar'}${x.categoria ? ', ' + x.categoria : ''}`;
+    return `<div class="item"><span class="e">🏦</span><div class="t"><b>${esc(x.banco)}</b><small>${esc(que)}${x.que === 'Ignorar' ? '' : '. ' + (x.auto ? 'Lo anoto solo' : 'Te pregunto antes')}${x.veces > 1 ? `, ${x.veces} veces` : ''}.</small></div>
+      <div class="der"><button class="btn-mini" type="button" data-olvidar="${esc(x.banco)}" aria-label="Olvidar ${esc(x.banco)}">Olvidar</button></div></div>`;
+  }).join('') : '<p class="vacio">Aún ninguno. Anota tus gastos como siempre: cuando llegue el correo del banco con el mismo valor, aprendo el nombre.</p>';
+  $$('#co-nombres [data-olvidar]').forEach(btn => btn.onclick = () => dosToques(btn, () => llamar('olvidarNombre', [btn.dataset.olvidar], 'Nombre olvidado', btn)));
 }
 
 /* ============================================================
@@ -1715,6 +1968,7 @@ function abrirAjustes() {
   const sw = (k, titulo, ayuda) => `<div class="cfg-fila"><div><b>${titulo}</b><small>${ayuda}</small></div>
     <label class="switch-row"><input type="checkbox" data-cfg="${k}" ${c[k] ? 'checked' : ''} aria-label="${titulo}"><span class="switch" aria-hidden="true"></span></label></div>`;
   pintarSeguridad();
+  pintarAvisos();
   pintarAppInstalable();
   $('#aj-dinero').innerHTML =
     campo('NOMBRE', 'Tu nombre', 'Así te saludo al abrir la app', c.NOMBRE, 'texto') +
@@ -1805,7 +2059,7 @@ function enlazar() {
       const r = await api('revisarCorreoAhora');
       D = r; render();
       const x = r.escaneo || {};
-      toast(x.activo === false ? 'Activa la lectura del correo en Ajustes.' : x.ocupado ? 'Ya estoy revisando; intenta en un minuto.' : x.nuevos ? `Encontré ${plural(x.nuevos, 'movimiento nuevo', 'movimientos nuevos')}${x.auto ? `; registré ${x.auto} automáticamente` : ''}` : 'No hay nada nuevo en tu correo.');
+      toast(x.activo === false ? 'Activa la lectura del correo en Ajustes.' : x.ocupado ? 'Ya estoy revisando; intenta en un minuto.' : x.nuevos ? `Encontré ${plural(x.nuevos, 'movimiento nuevo', 'movimientos nuevos')}${x.auto ? `; anoté ${x.auto} sola` : ''}${x.cruzados ? `; ${x.cruzados} ya los tenías anotados` : ''}` : 'No hay nada nuevo en tu correo.');
     } catch (err) { toast(errMsg(err), true); }
     b.disabled = false; b.textContent = 'Revisar mi correo ahora';
   };
@@ -1837,7 +2091,7 @@ function enlazar() {
   $('#aj-agregar-cupo').onclick = () => { S.cuposEdit.push({ categoria: '', emoji: '🌿', cupo: 0, tipo: 'Variable', activo: true }); pintarCuposEdit(); $$('#aj-cupos [data-k="categoria"]').slice(-1)[0].focus(); };
   $('#aj-guardar-cupos').onclick = e => llamar('guardarCupos', [S.cuposEdit.map(c => ({ categoria: c.categoria, emoji: c.emoji, cupo: parseNum(c.cupo), tipo: c.tipo, activo: c.activo !== false }))], 'Cupos guardados', e.currentTarget).then(() => { S.cuposEdit = D.cuposConfig.map(x => Object.assign({}, x)); pintarCuposEdit(); }).catch(() => {});
   $('#f-agregar').onclick = () => { S.fijosEdit.push({ id: '', concepto: '', emoji: '📌', monto: 0, dia: '', desde: '', hasta: '', tipo: 'Servicio', saldo: '', ultimoPago: '', activo: true }); pintarEditorFijos(); $$('#f-editor [data-k="concepto"]').slice(-1)[0].focus(); };
-  $('#f-guardar').onclick = e => llamar('guardarFijos', [S.fijosEdit.map(x => ({ id: x.id, concepto: x.concepto, emoji: x.emoji, monto: parseNum(x.monto), dia: x.dia, desde: x.desde, hasta: x.hasta, tipo: x.tipo, saldo: x.saldo === null || x.saldo === '' ? '' : parseNum(x.saldo), ultimoPago: x.ultimoPago, activo: x.activo !== false }))], 'Fijos guardados', e.currentTarget)
+  $('#f-guardar').onclick = e => llamar('guardarFijos', [S.fijosEdit.map(x => ({ id: x.id, concepto: x.concepto, emoji: x.emoji, monto: parseNum(x.monto), dia: x.dia, desde: x.desde, hasta: x.hasta, tipo: x.tipo, saldo: x.saldo === null || x.saldo === '' ? '' : parseNum(x.saldo), ultimoPago: x.ultimoPago, activo: x.activo !== false, tasa: String(x.tasa || '').replace(',', '.'), cuotas: x.cuotas ? parseNum(x.cuotas) : '' }))], 'Fijos guardados', e.currentTarget)
     .then(() => { S.fijosEdit = D.fijos.map(x => Object.assign({}, x)); pintarEditorFijos(); }).catch(() => {});
   $('#f-meta').onsubmit = e => {
     e.preventDefault();
@@ -1874,24 +2128,34 @@ async function iniciar() {
   });
   if (MODO_APP) {
     // Si la app ya estaba abierta y tocas el enlace, solo cambia el #: lo detecta y recarga
-    window.addEventListener('hashchange', () => { if (/vincular=/.test(location.hash) && vincularDesdeEnlace()) location.reload(); });
+    window.addEventListener('hashchange', () => {
+      if (/vincular=/.test(location.hash) && vincularDesdeEnlace()) { location.reload(); return; }
+      const v = location.hash.match(/ir=(\w+)/);
+      if (v) { history.replaceState(null, '', location.pathname + location.search); irDesdeAviso(v[1]); }
+    });
     const recien = vincularDesdeEnlace();
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => { });
+    const ir = location.hash.match(/ir=(\w+)/);
+    if (ir) { S.irPendiente = ir[1]; history.replaceState(null, '', location.pathname + location.search); }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => { });
+      navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.ir) irDesdeAviso(e.data.ir); });
+    }
     if (!CONF) { mostrarSinVinculo(); return; }
+    guardarConfSW();
     if (recien) setTimeout(() => toast('Celular vinculado. Ahora toca ⋮ → Instalar app'), 600);
   }
   try {
     const r = await api('inicio');
     CA.nombre = r.nombre; CA.ahora = r.ahora;
-    if (r.bloqueado) { abrirCandado('entrar', { largo: r.pinLen, nombre: r.nombre, ahora: r.ahora }); return; }
-    D = r.data; render(); cerrarCandado();
+    if (r.bloqueado) { abrirCandado('entrar', { largo: r.pinLen, nombre: r.nombre, ahora: r.ahora, huella: !!r.huella }); return; }
+    D = r.data; render(); cerrarCandado(); despuesDeEntrar();
     let omitido = false;
     try { omitido = localStorage.getItem('eqg_pin_omitido') === '1'; } catch (e) { omitido = false; }
     if (!omitido) abrirCandado('crear', { intento: 'crear', opcional: true, nombre: r.nombre, ahora: r.ahora });
     else toast(`${saludoHora(r.ahora)}${r.nombre ? ', ' + r.nombre : ''} 🌿`);
   }
   catch (e) {
-    if (errMsg(e) === 'SIN_VINCULO') return;
+    if (errMsg(e) === 'SIN_VINCULO' || errMsg(e) === 'SIN_PIN') return;
     $('#ca-sub').textContent = 'No pude cargar tus datos.';
     $('#ca-error').textContent = errMsg(e);
     $('#ca-pie').innerHTML = '<button type="button" onclick="location.reload()">Intentar de nuevo</button>';

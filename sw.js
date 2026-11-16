@@ -4,7 +4,8 @@ const CACHE = 'enquegasto-v2';
 const ARCHIVOS = ['./', './index.html', './manifest.json', './icono-192.png', './icono-512.png', './icono-maskable-512.png', './insignia-96.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ARCHIVOS)).then(() => self.skipWaiting()));
+  // Si falta algún archivo (por ejemplo la insignia), igual se instala
+  e.waitUntil(caches.open(CACHE).then(c => Promise.all(ARCHIVOS.map(f => c.add(f).catch(() => null)))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
