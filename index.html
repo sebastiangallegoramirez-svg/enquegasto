@@ -375,6 +375,13 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
 .cuenta .fila{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;font-size:16px}
 .cuenta .fila b{font-weight:700;white-space:nowrap}
 .cuenta .resta{color:var(--gris);border-bottom:1.5px solid var(--linea)}
+.cuenta .sub{font-size:14.5px;color:var(--gris);padding:2px 0 2px 4px}
+.cuenta .sub span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+.form-plata{margin-top:10px}
+.form-plata .fila-2{margin-top:0}
+.form-plata .lbl{margin-top:0}
+.entro-dest{grid-column:1/-1;display:flex;gap:8px}
+.hist-sub{font-size:14px;font-weight:650;color:var(--gris);margin:14px 0 2px}
 .cuenta .total{font-size:18px}
 .cuenta .total b{color:var(--hoja);font-size:22px}
 .cuenta .total.mal b{color:var(--otono)}
@@ -390,6 +397,9 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
 .ed-borrar{display:flex;justify-content:center;margin-top:20px}
 .acciones-mov{display:flex;gap:6px;justify-content:flex-end}
 .abonos{margin-top:10px}
+.nota .num-b{display:inline;font-variant-numeric:tabular-nums}
+.copia-fila{padding:10px 0 4px}
+.copia-fila small{display:block;color:var(--gris);font-size:13px;margin-top:2px}
 .abonos summary{font-size:14px}
 .abonos .item{padding:8px 0}
 .abonos .item .e{font-size:16px}
@@ -669,6 +679,8 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
     <div class="ajustes-top"><h2 id="aj-titulo">Ajustes</h2><button class="btn btn-sec" id="aj-cerrar" type="button">Cerrar</button></div>
     <h2 style="font-size:17px">Seguridad</h2>
     <div class="lista" id="aj-seguridad"></div>
+    <h2 style="font-size:17px">Copia de seguridad</h2>
+    <div class="lista" id="aj-copia"></div>
     <h2 style="font-size:17px">Notificaciones en el celular</h2>
     <div class="lista" id="aj-avisos"></div>
     <h2 style="font-size:17px">App en tu celular</h2>
@@ -1260,6 +1272,14 @@ function pintarAppInstalable() {
   if ($('#aj-desvincular')) $('#aj-desvincular').onclick = e => dosToques(e.currentTarget, () => llamar('desvincularCelulares', [], 'Celulares desvinculados', e.currentTarget).then(pintarAppInstalable).catch(() => {}));
 }
 
+function pintarCopia() {
+  const c = D.copia || {};
+  $('#aj-copia').innerHTML = `<div class="copia-fila"><b>${c.ultima ? `Última copia: ${fCorta(c.ultima.slice(0, 10))}, ${esc(c.ultima.slice(11, 16))}` : 'Todavía no hay copias'}</b>
+    <small>Cada domingo copio todas tus hojas a un archivo aparte en tu Drive y guardo las últimas 4 semanas. Si algo se borra o se daña, ahí está.</small></div>
+    <div class="mini-acciones" style="padding:6px 0 14px"><button class="btn btn-primario" type="button" id="aj-copiar" style="padding:10px 16px;font-size:15px">Hacer una copia ahora</button>${c.url ? `<a class="btn-mini" href="${esc(c.url)}" target="_blank" rel="noopener">Abrir mis copias</a>` : ''}</div>`;
+  $('#aj-copiar').onclick = e => llamar('copiaDeSeguridad', [], null, e.currentTarget).then(d => { toast((d && d.copiaHecha) || 'Copia guardada'); pintarCopia(); }).catch(() => {});
+}
+
 function pintarSeguridad() {
   const box = $('#aj-seguridad');
   box.innerHTML = D.tienePin
@@ -1392,9 +1412,23 @@ function renderInicio() {
       <button class="btn-mini" type="button" id="i-ing-otro">Llegó otro valor</button><button class="btn-mini" type="button" id="i-ing-no">Todavía no</button></div>
       <form class="form-inline oculto" id="i-ing-form"><input class="num fmt" inputmode="numeric" placeholder="¿Cuánto te llegó?" aria-label="Valor recibido"><button class="btn btn-primario" type="submit" style="padding:9px 14px">Sumar</button></form></div></div>`;
   }
+  if (D.cuadre && P.configurado && !P.pedirIngreso) {
+    avisos += `<div class="nota" id="i-cuadre"><span class="i">🏦</span><div><b>¿Tu saldo cuadra con el banco?</b>La app dice que ${D.efectivo ? 'en tu cuenta hay' : 'tienes'} <b class="num-b">${money(D.efectivo ? D.efectivo.cuenta : P.saldo)}</b>. Hace ${D.cuadre.dias} días no lo confirmas: míralo en tu app de Bancolombia.
+      <div class="mini-acciones"><button class="btn btn-primario" type="button" id="i-cuadre-si" style="padding:9px 14px;font-size:14.5px">Sí, coincide</button><button class="btn-mini" type="button" id="i-cuadre-no">No, corregirlo</button></div></div></div>`;
+  }
   avisos += '<div id="i-correo"></div>';
   $('#i-avisos').innerHTML = avisos;
   if ($('#i-empezar')) $('#i-empezar').onclick = abrirEmpezar;
+  if ($('#i-cuadre-si')) {
+    $('#i-cuadre-si').onclick = e => llamar('actualizarSaldo', [P.saldo], 'Listo, quedó cuadrado 🌿', e.currentTarget).catch(() => {});
+    $('#i-cuadre-no').onclick = () => {
+      const f = $('#i-form-saldo');
+      if (!f) return;
+      f.classList.remove('oculto');
+      f.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+      $('input', f).focus();
+    };
+  }
   if (P.pedirIngreso) {
     $('#i-ing-si').onclick = e => llamar('registrarIngreso', [P.pedirIngreso.valor, P.pedirIngreso.fecha], 'Pago sumado a tu saldo 🌿', e.currentTarget).catch(() => {});
     $('#i-ing-no').onclick = e => llamar('posponerIngreso', [P.pedirIngreso.fecha], 'Listo. Cuando te llegue, toca “Me entró plata”', e.currentTarget).catch(() => {});
@@ -1411,9 +1445,12 @@ function renderInicio() {
     $('#i-plata').innerHTML = `<p class="suave" style="margin:0">Aún no me has dicho cuánta plata tienes. Mientras tanto, arriba ves cuánto llevas gastado este mes frente a tus cupos.</p>`;
   } else {
     const hasta = P.proximo ? `antes del ${fCorta(P.proximo)}` : 'este mes';
+    const EF = D.efectivo;
+    const movsEf = EF ? EF.movs : [];
     const act = P.actualizado ? `Ajustaste el saldo el ${fCorta(P.actualizado.slice(0, 10))} a las ${P.actualizado.slice(11, 16)}; desde ahí se mueve solo con lo que anotas.` : '';
     $('#i-plata').innerHTML = `<div class="cuenta">
         <div class="fila"><span>Tienes hoy</span><b class="num">${money(P.saldo)}</b></div>
+        ${EF ? `<div class="fila sub"><span>🏦 En tu cuenta</span><span>${money(EF.cuenta)}</span></div><div class="fila sub"><span>💵 En efectivo</span><span>${money(EF.efectivo)}</span></div>` : ''}
         <div class="fila resta"><span>Fijos por pagar ${hasta}</span><b class="num">− ${money(P.pendientesTotal)}</b></div>
         <div class="fila total ${P.disponible < 0 ? 'mal' : ''}"><span>Para el día a día</span><b class="num">${money(P.disponible)}</b></div></div>
       ${P.disponible < 0 ? `<p class="peq" style="margin:6px 0 0">Te faltan ${money(-P.disponible)} para cubrir los fijos. Mira cuáles pueden esperar o corrige tu saldo si tienes más plata.</p>`
@@ -1423,17 +1460,44 @@ function renderInicio() {
         : `<p class="peq" style="margin:6px 0 0">Son ${plural(P.dias, 'día', 'días')} hasta tu próximo pago${P.proximo ? ` (${fCorta(P.proximo)})` : ''}: <b>${money(P.porDia)} por día</b>.</p>`}
       ${P.credito ? `<p class="peq suave" style="margin:6px 0 0">Con tarjeta de crédito o Addi llevas ${money(P.credito)} este mes. Eso no sale hoy de tu cuenta: lo pagas después.</p>` : ''}
       <p class="peq suave" style="margin:6px 0 0">${act}</p>
-      <div class="mini-acciones"><button class="btn-mini" type="button" id="i-corregir">Corregir saldo</button><button class="btn-mini" type="button" id="i-entro">Me entró plata</button>${P.historial && P.historial.length ? '<button class="btn-mini" type="button" id="i-ver-hist">Ver movimientos</button>' : ''}</div>
-      <form class="form-inline oculto" id="i-form-saldo"><input class="num fmt" inputmode="numeric" placeholder="¿Cuánto tienes ahora?" aria-label="Saldo actual"><button class="btn btn-primario" type="submit" style="padding:9px 14px">Guardar</button></form>
-      <form class="form-inline oculto" id="i-form-entro"><input class="num fmt" inputmode="numeric" placeholder="¿Cuánto te entró?" aria-label="Valor que te entró"><button class="btn btn-primario" type="submit" style="padding:9px 14px">Sumar</button></form>
-      <div class="hist oculto" id="i-hist">${(P.historial || []).map(h => `<div><span>${esc(h.mov)}<br><small class="suave">${fCorta(h.fecha.slice(0, 10))} ${esc(h.fecha.slice(11, 16))}</small></span><span class="num" style="text-align:right">${h.mov.indexOf('Saldo ajustado') === 0 ? '' : (h.valor > 0 ? '+' : '') + money(h.valor)}<br><small class="suave">queda ${money(h.saldo)}</small>${h.deshacer ? `<br><button class="btn-mini" type="button" data-deshacer-ing="${h.fila}" aria-label="Deshacer entrada de ${money(h.valor)}">Deshacer</button>` : ''}</span></div>`).join('')}</div>`;
-    const formas = [['#i-corregir', '#i-form-saldo'], ['#i-entro', '#i-form-entro']];
-    formas.forEach(([b, f]) => { $(b).onclick = () => { $(f).classList.toggle('oculto'); if (!$(f).classList.contains('oculto')) $(f + ' input').focus(); }; $(f + ' input').addEventListener('input', e => { e.target.value = fmtNum(parseNum(e.target.value)); }); });
-    $('#i-form-saldo').onsubmit = e => { e.preventDefault(); const v = $('input', e.target).value; if (v === '') return; llamar('actualizarSaldo', [parseNum(v)], 'Saldo actualizado', $('button', e.target)).catch(() => {}); };
-    $('#i-form-entro').onsubmit = e => { e.preventDefault(); const v = parseNum($('input', e.target).value); if (!v) return; llamar('registrarIngreso', [v, D.hoy], 'Sumado a tu saldo 🌿', $('button', e.target)).catch(() => {}); };
+      <div class="mini-acciones"><button class="btn-mini" type="button" id="i-corregir">Corregir saldo</button><button class="btn-mini" type="button" id="i-entro">Me entró plata</button>${EF ? '<button class="btn-mini" type="button" id="i-retiro">Saqué del cajero</button>' : '<button class="btn-mini" type="button" id="i-tengo-ef">¿Tienes efectivo?</button>'}${(P.historial && P.historial.length) || movsEf.length ? '<button class="btn-mini" type="button" id="i-ver-hist">Ver movimientos</button>' : ''}</div>
+      <form class="form-plata oculto" id="i-form-saldo" novalidate>
+        <div class="fila-2">
+          <div><label class="lbl" for="i-fs-cuenta">En tu cuenta</label><input id="i-fs-cuenta" class="num fmt" inputmode="numeric" value="${fmtNum(EF ? EF.cuenta : P.saldo)}" aria-label="Lo que tienes en tu cuenta"></div>
+          <div><label class="lbl" for="i-fs-ef">En efectivo${EF ? '' : ' (si tienes)'}</label><input id="i-fs-ef" class="num fmt" inputmode="numeric" placeholder="0" value="${EF ? fmtNum(EF.efectivo) : ''}" aria-label="Lo que tienes en efectivo"></div>
+        </div>
+        <button class="btn btn-primario btn-ancho" type="submit" style="margin-top:10px">Guardar</button>
+      </form>
+      <form class="form-inline oculto" id="i-form-entro" novalidate><input class="num fmt" inputmode="numeric" placeholder="¿Cuánto te entró?" aria-label="Valor que te entró"><button class="btn btn-primario" type="submit" style="padding:9px 14px">Sumar</button>
+        ${EF ? `<div class="entro-dest" role="group" aria-label="¿Dónde te entró?"><button type="button" class="pill" data-dest="cuenta" aria-pressed="true">A la cuenta</button><button type="button" class="pill" data-dest="efectivo" aria-pressed="false">En efectivo</button></div>` : ''}</form>
+      ${EF ? `<form class="form-inline oculto" id="i-form-retiro" novalidate><input class="num fmt" inputmode="numeric" placeholder="¿Cuánto sacaste?" aria-label="Valor que sacaste del cajero"><button class="btn btn-primario" type="submit" style="padding:9px 14px">Guardar</button></form>` : ''}
+      <div class="hist oculto" id="i-hist">${(P.historial || []).map(h => `<div><span>${esc(h.mov)}<br><small class="suave">${fCorta(h.fecha.slice(0, 10))} ${esc(h.fecha.slice(11, 16))}</small></span><span class="num" style="text-align:right">${h.mov.indexOf('Saldo ajustado') === 0 ? '' : (h.valor > 0 ? '+' : '') + money(h.valor)}<br><small class="suave">queda ${money(h.saldo)}</small>${h.deshacer ? `<br><button class="btn-mini" type="button" data-deshacer-ing="${h.fila}" aria-label="Deshacer entrada de ${money(h.valor)}">Deshacer</button>` : ''}</span></div>`).join('')}
+        ${movsEf.length ? `<h3 class="hist-sub">Movimientos del efectivo</h3>${movsEf.map(m => `<div><span>${esc(m.mov)}<br><small class="suave">${fCorta(m.momento.slice(0, 10))} ${esc(m.momento.slice(11, 16))}</small></span><span class="num" style="text-align:right">${m.valor > 0 ? '+' : ''}${money(m.valor)}${m.cuenta ? `<br><button class="btn-mini" type="button" data-deshacer-ef="${esc(m.id)}" aria-label="Deshacer ${esc(m.mov)} de ${money(m.valor)}">Deshacer</button>` : ''}</span></div>`).join('')}` : ''}</div>`;
+    // Botones y formularios de "Tu plata"
+    const abrir = (f, foco) => { const el = $(f); el.classList.toggle('oculto'); if (!el.classList.contains('oculto')) $(foco || 'input', el).focus(); };
+    $('#i-corregir').onclick = () => abrir('#i-form-saldo', '#i-fs-cuenta');
+    $('#i-entro').onclick = () => abrir('#i-form-entro');
+    if ($('#i-retiro')) $('#i-retiro').onclick = () => abrir('#i-form-retiro');
+    if ($('#i-tengo-ef')) $('#i-tengo-ef').onclick = () => { $('#i-form-saldo').classList.remove('oculto'); $('#i-fs-ef').focus(); };
+    $$('#i-plata input.fmt').forEach(i => i.addEventListener('input', e => { e.target.value = fmtNum(parseNum(e.target.value)); }));
+    $('#i-form-saldo').onsubmit = e => {
+      e.preventDefault();
+      const c = $('#i-fs-cuenta').value, ef = $('#i-fs-ef').value.trim();
+      if (c === '') { toast('Escribe lo que tienes en tu cuenta.', true); return; }
+      const btn = $('button[type="submit"]', e.target);
+      if (!EF && ef === '') llamar('actualizarSaldo', [parseNum(c)], 'Saldo actualizado', btn).catch(() => {});
+      else llamar('ajustarPlata', [parseNum(c), parseNum(ef)], EF ? 'Listo, quedó corregido' : 'Listo: ahora llevo tu efectivo aparte 💵', btn).catch(() => {});
+    };
+    let destino = 'cuenta';
+    $$('#i-form-entro [data-dest]').forEach(b => b.onclick = () => { destino = b.dataset.dest; $$('#i-form-entro [data-dest]').forEach(x => x.setAttribute('aria-pressed', x === b)); });
+    $('#i-form-entro').onsubmit = e => { e.preventDefault(); const v = parseNum($('input', e.target).value); if (!v) return; llamar('registrarIngreso', [v, D.hoy, destino], destino === 'efectivo' ? 'Sumado a tu efectivo 💵' : 'Sumado a tu saldo 🌿', $('button[type="submit"]', e.target)).catch(() => {}); };
+    if ($('#i-form-retiro')) $('#i-form-retiro').onsubmit = e => { e.preventDefault(); const v = parseNum($('input', e.target).value); if (!v) return; llamar('registrarRetiro', [v], null, $('button', e.target)).then(d => toast((d && d.retiro) || 'Listo')).catch(() => {}); };
+    const verHist = () => { const h = $('#i-hist'); if (h) h.classList.remove('oculto'); };
     if ($('#i-ver-hist')) $('#i-ver-hist').onclick = () => $('#i-hist').classList.toggle('oculto');
     $$('#i-hist [data-deshacer-ing]').forEach(b => b.onclick = () => dosToques(b, () => llamar('deshacerIngreso', [Number(b.dataset.deshacerIng)], null, b)
-      .then(d => { toast((d && d.deshecho) || 'Entrada deshecha'); const h = $('#i-hist'); if (h) h.classList.remove('oculto'); }).catch(() => {})));
+      .then(d => { toast((d && d.deshecho) || 'Entrada deshecha'); verHist(); }).catch(() => {})));
+    $$('#i-hist [data-deshacer-ef]').forEach(b => b.onclick = () => dosToques(b, () => llamar('deshacerEfectivo', [b.dataset.deshacerEf], null, b)
+      .then(d => { toast((d && d.deshecho) || 'Listo'); verHist(); }).catch(() => {})));
   }
   // Fijos del mes
   $('#i-fijos-titulo').textContent = D.config.DIA_CORTE === 1 ? `Gastos fijos de ${D.periodo.etiqueta.toLowerCase()}` : `Gastos fijos del ${D.periodo.etiqueta}`;
@@ -2104,8 +2168,11 @@ function renderAvisoCorreo() {
   $('#btn-correo').setAttribute('aria-label', n ? `Movimientos del correo: ${n} por revisar` : 'Movimientos del correo');
   const box = $('#i-correo');
   if (box) {
-    box.innerHTML = n ? `<div class="nota ok"><span class="i">📬</span><div><b>${plural(n, 'movimiento', 'movimientos')} de tu correo por revisar</b><button class="btn-txt" type="button" id="a-ir-correo">Revisarlos</button></div></div>` : '';
+    const sil = b.silencio;
+    box.innerHTML = (sil ? `<div class="nota aviso"><span class="i">🏦</span><div><b>Hace ${sil.dias} días no me llega nada de tu banco</b>El último movimiento que leí fue del ${fCorta(sil.ultima)}. Si en estos días usaste la tarjeta o transferiste, anótalo a mano: puede que Bancolombia haya cambiado sus correos.<button class="btn-txt" type="button" id="a-sil-correo">Revisar el correo</button></div></div>` : '')
+      + (n ? `<div class="nota ok"><span class="i">📬</span><div><b>${plural(n, 'movimiento', 'movimientos')} de tu correo por revisar</b><button class="btn-txt" type="button" id="a-ir-correo">Revisarlos</button></div></div>` : '');
     if (n) $('#a-ir-correo').onclick = abrirCorreo;
+    if (sil) $('#a-sil-correo').onclick = abrirCorreo;
   }
   pintarValio();
 }
@@ -2274,6 +2341,7 @@ function abrirAjustes() {
   const sw = (k, titulo, ayuda) => `<div class="cfg-fila"><div><b>${titulo}</b><small>${ayuda}</small></div>
     <label class="switch-row"><input type="checkbox" data-cfg="${k}" ${c[k] ? 'checked' : ''} aria-label="${titulo}"><span class="switch" aria-hidden="true"></span></label></div>`;
   pintarSeguridad();
+  pintarCopia();
   pintarAvisos();
   pintarAppInstalable();
   $('#aj-dinero').innerHTML =
