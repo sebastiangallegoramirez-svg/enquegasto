@@ -690,6 +690,7 @@ input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;min-height:
     <div class="lista" id="aj-seguridad"></div>
     <h2 style="font-size:17px">Copia de seguridad</h2>
     <div class="lista" id="aj-copia"></div>
+    <p class="peq suave" id="aj-version" style="margin:14px 2px 0"></p>
     <h2 style="font-size:17px">Notificaciones en el celular</h2>
     <div class="lista" id="aj-avisos"></div>
     <h2 style="font-size:17px">App en tu celular</h2>
@@ -847,6 +848,31 @@ const listaBonita = arr => arr.length <= 1 ? (arr[0] || '') : arr.slice(0, -1).j
 const MODO_APP = !(window.google && google.script && google.script.run);
 function leerConf() { try { return JSON.parse(localStorage.getItem('eqg_conf') || 'null'); } catch (e) { return null; } }
 let CONF = MODO_APP ? leerConf() : null;
+
+// ---------- Sesión que aguanta 15 minutos fuera ----------
+// Si sales de la app (o el celular la cierra) y vuelves antes de 15 minutos, entras directo y con tu pantalla al instante.
+const MIN_FUERA = 15;
+const VERSION_APP = '2026-11-21';
+function guardarSesion() {
+  if (!MODO_APP || !S.token) return;
+  try {
+    localStorage.setItem('eqg_ses', JSON.stringify({ t: S.token, ult: Date.now() }));
+    if (D) localStorage.setItem('eqg_dash', JSON.stringify(D));
+  } catch (e) { }
+}
+function olvidarSesion() { try { localStorage.removeItem('eqg_ses'); localStorage.removeItem('eqg_dash'); } catch (e) { } }
+function retomarSesion() {
+  let ses = null, dash = null;
+  try { ses = JSON.parse(localStorage.getItem('eqg_ses') || 'null'); dash = JSON.parse(localStorage.getItem('eqg_dash') || 'null'); } catch (e) { ses = null; }
+  if (!ses || !ses.t || !dash || Date.now() - ses.ult > MIN_FUERA * 60000) { olvidarSesion(); return false; }
+  S.token = ses.t; D = dash; render(); cerrarCandado();
+  api('getDashboard').then(d => { D = d; render(); guardarSesion(); despuesDeEntrar(); })
+    .catch(e => {
+      if (errMsg(e) === 'BLOQUEADO') { olvidarSesion(); bloquearAhora(); }
+      else toast('Sin conexión: te muestro lo último que tenías.', true);
+    });
+  return true;
+}
 
 async function api(fn, ...args) {
   try {
@@ -1205,7 +1231,7 @@ async function intentarHuella() {
     sub.textContent = 'Un momento…';
     const r = await api('entrarConHuella', { id: b64u(cred.rawId), clientData: b64u(cred.response.clientDataJSON),
       authData: b64u(cred.response.authenticatorData), firma: b64u(cred.response.signature) });
-    S.token = r.token; D = r.data; render(); cerrarCandado(); despuesDeEntrar();
+    S.token = r.token; D = r.data; render(); cerrarCandado(); despuesDeEntrar(); guardarSesion();
   } catch (e) {
     sub.textContent = 'Usa tu huella o escribe tu PIN';
     const m = errMsg(e);
@@ -1262,7 +1288,7 @@ async function avanzarCandado() {
   try {
     if (CA.modo === 'entrar') {
       const r = await conCarga('desbloquear', [pin]);
-      S.token = r.token; D = r.data; render(); cerrarCandado(); despuesDeEntrar();
+      S.token = r.token; D = r.data; render(); cerrarCandado(); despuesDeEntrar(); guardarSesion();
       return;
     }
     if (CA.modo === 'actual') {
@@ -1274,7 +1300,7 @@ async function avanzarCandado() {
     if (CA.modo === 'repetir') {
       if (pin !== CA.nuevo) { CA.modo = 'crear'; CA.nuevo = ''; $('#ca-sub').textContent = textosCandado.crear()[0]; errorCandado('No coinciden. Empecemos otra vez.'); return; }
       const r = CA.intento === 'cambiar' ? await conCarga('cambiarPin', [CA.actual, pin]) : await conCarga('crearPin', [pin]);
-      S.token = r.token; D = r.data; CA.largo = pin.length; render(); cerrarCandado();
+      S.token = r.token; D = r.data; CA.largo = pin.length; render(); cerrarCandado(); guardarSesion();
       toast(CA.intento === 'cambiar' ? 'PIN cambiado 🔒' : 'Listo: tu app quedó con PIN 🔒');
       if (!$('#ajustes').classList.contains('oculto')) pintarSeguridad();
     }
@@ -1287,6 +1313,7 @@ async function avanzarCandado() {
   }
 }
 function bloquearAhora() {
+  olvidarSesion();
   if (!D || !D.tienePin) return;
   S.token = '';
   if (!$('#ajustes').classList.contains('oculto')) cerrarAjustes();
@@ -1333,7 +1360,7 @@ function pintarCopia() {
 function pintarSeguridad() {
   const box = $('#aj-seguridad');
   box.innerHTML = D.tienePin
-    ? `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Tu app tiene PIN 🔒</b><small>Te lo pido al abrirla, cuando vuelves después de 2 minutos fuera de la app y tras 30 minutos sin usarla. Si alguien lo falla 5 veces, te llega un correo.</small></div></div>
+    ? `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Tu app tiene PIN 🔒</b><small>Te lo pido si vuelves después de 15 minutos fuera de la app (aunque la hayas cerrado) y tras 30 minutos sin usarla. Si alguien lo falla 5 veces, te llega un correo.</small></div></div>
        <div class="mini-acciones" style="padding:4px 0 14px"><button class="btn-mini" type="button" id="aj-bloquear">Bloquear ahora</button><button class="btn-mini" type="button" id="aj-cambiar-pin">Cambiar PIN</button>${MODO_APP ? '' : '<button class="btn-mini" type="button" id="aj-quitar-pin">Quitar PIN</button>'}</div>
        ${!MODO_APP && D.appInstalable && D.appInstalable.celulares ? '<p class="peq suave" style="margin:0 0 12px">Si quitas el PIN, la app instalada en tu celular deja de funcionar hasta que crees otro.</p>' : ''}`
     : `<div class="cfg-fila" style="grid-template-columns:1fr"><div><b>Sin PIN</b><small>Cualquiera que tenga tu celular desbloqueado puede abrir la app.</small></div></div>
@@ -1465,6 +1492,12 @@ function renderInicio() {
   if (D.cuadre && P.configurado && !P.pedirIngreso) {
     avisos += `<div class="nota" id="i-cuadre"><span class="i">🏦</span><div><b>¿Tu saldo cuadra con el banco?</b>La app dice que ${D.efectivo ? 'en tu cuenta hay' : 'tienes'} <b class="num-b">${money(D.efectivo ? D.efectivo.cuenta : P.saldo)}</b>. Hace ${D.cuadre.dias} días no lo confirmas: míralo en tu app de Bancolombia.
       <div class="mini-acciones"><button class="btn btn-primario" type="button" id="i-cuadre-si" style="padding:9px 14px;font-size:14.5px">Sí, coincide</button><button class="btn-mini" type="button" id="i-cuadre-no">No, corregirlo</button></div></div></div>`;
+  }
+  if (MODO_APP && D.version !== VERSION_APP) {
+    const servidorViejo = !D.version || D.version < VERSION_APP;
+    avisos += `<div class="nota aviso"><span class="i">⚙️</span><div><b>${servidorViejo ? 'Falta actualizar Apps Script' : 'Falta actualizar GitHub'}</b>${servidorViejo
+      ? 'La pantalla es nueva, pero tu Apps Script sigue con la versión anterior: lo nuevo no va a funcionar y todo irá más lento. Pega Code.gs y crea una Nueva versión en las dos implementaciones.'
+      : 'Tu Apps Script es más nuevo que la pantalla. Sube index.html a GitHub y vuelve a abrir la app.'}</div></div>`;
   }
   avisos += '<div id="i-correo"></div>';
   $('#i-avisos').innerHTML = avisos;
@@ -2403,6 +2436,7 @@ function abrirAjustes() {
     <label class="switch-row"><input type="checkbox" data-cfg="${k}" ${c[k] ? 'checked' : ''} aria-label="${titulo}"><span class="switch" aria-hidden="true"></span></label></div>`;
   pintarSeguridad();
   pintarCopia();
+  $('#aj-version').textContent = `Versión de la pantalla: ${fCorta(VERSION_APP)} · del servidor: ${D.version ? fCorta(D.version) : 'anterior al 21 nov'}`;
   pintarAvisos();
   pintarAppInstalable();
   $('#aj-dinero').innerHTML =
@@ -2560,12 +2594,13 @@ async function iniciar() {
     else if (e.key === 'Backspace') { teclaCandado('borrar'); e.preventDefault(); }
     else if (e.key === 'Enter') { teclaCandado('ok'); e.preventDefault(); }
   });
-  // Se bloquea si sales de la app más de 2 minutos
+  // Se bloquea si sales de la app más de 15 minutos (y si vuelves antes, sigues donde estabas)
   let ocultoDesde = 0;
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) ocultoDesde = Date.now();
-    else if (D && D.tienePin && ocultoDesde && Date.now() - ocultoDesde > 120000 && $('#candado').classList.contains('oculto')) bloquearAhora();
+    if (document.hidden) { ocultoDesde = Date.now(); guardarSesion(); }
+    else if (D && D.tienePin && ocultoDesde && Date.now() - ocultoDesde > MIN_FUERA * 60000 && $('#candado').classList.contains('oculto')) bloquearAhora();
   });
+  window.addEventListener('pagehide', guardarSesion);
   if (MODO_APP) {
     // Si la app ya estaba abierta y tocas el enlace, solo cambia el #: lo detecta y recarga
     window.addEventListener('hashchange', () => {
@@ -2586,6 +2621,7 @@ async function iniciar() {
   }
   // Más rápido: el candado aparece de una con lo que recuerda este celular, y tu pantalla
   // se va preparando en el servidor mientras pones la huella o el PIN.
+  if (MODO_APP && retomarSesion()) return; // volviste antes de 15 minutos: directo y al instante
   let ui = null, abiertoAntes = false;
   if (MODO_APP) {
     try { ui = JSON.parse(localStorage.getItem('eqg_ui') || 'null'); } catch (e) { ui = null; }
